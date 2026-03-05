@@ -1,0 +1,1482 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>TypeRace — ALHACKER168</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --g:#00FFCC;--g2:#00CCFF;--gold:#FFD700;--gold2:#FF9500;
+  --red:#FF3355;--purple:#BB66FF;
+  --bg:#04060F;--bg2:#070B18;--bg3:#0A1020;
+  --border:rgba(0,255,200,0.12);--border2:rgba(255,255,255,0.06);
+  --text:#D8E8F5;--muted:#4A607A;
+  --fd:'Orbitron',monospace;--fb:'Rajdhani',sans-serif;--fm:'Share Tech Mono',monospace;
+}
+
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);color:var(--text);font-family:var(--fb);
+  min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased;
+  cursor:auto !important;
+}
+
+/* ── RAIN CANVAS ── */
+#rainCanvas{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  width:100%;height:100%;
+}
+
+/* ── LIGHTNING ── */
+#lightningCanvas{
+  position:fixed;inset:0;z-index:1;pointer-events:none;
+  width:100%;height:100%;
+}
+
+/* ── BACKGROUND GRID ── */
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,255,200,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,200,0.015) 1px,transparent 1px);background-size:50px 50px;pointer-events:none;z-index:0;}
+
+.wrap{position:relative;z-index:2;max-width:1300px;margin:0 auto;padding:0 16px}
+
+/* ── HEADER ── */
+header{padding:18px 0 14px;border-bottom:1px solid var(--border);position:relative;z-index:2;}
+header::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--g),var(--gold),var(--g2),transparent);animation:hScan 4s ease-in-out infinite;}
+@keyframes hScan{0%,100%{opacity:.3}50%{opacity:1}}
+.hinner{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.logo{display:flex;flex-direction:column;gap:3px}
+.logo-main{font-family:var(--fd);font-size:clamp(16px,3.5vw,28px);font-weight:900;letter-spacing:3px;line-height:1;background:linear-gradient(120deg,var(--g),var(--gold),var(--g2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 16px rgba(0,255,200,0.4));}
+.logo-sub{font-family:var(--fd);font-size:clamp(7px,1.2vw,9px);color:var(--gold);letter-spacing:5px;opacity:.7;text-transform:uppercase;}
+.hcontrols{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.lsel{background:var(--bg3);border:1px solid var(--border);color:var(--g);font-family:var(--fb);font-size:12px;padding:7px 12px;border-radius:6px;outline:none;transition:.3s;}
+.lsel option{background:#0A1020}
+.pbadge{display:flex;align-items:center;gap:7px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:5px 12px;}
+.pdot{width:7px;height:7px;border-radius:50%;background:var(--g);box-shadow:0 0 6px var(--g);animation:blink2 2s infinite}
+@keyframes blink2{0%,100%{opacity:1}50%{opacity:.3}}
+.pname{font-family:var(--fm);font-size:12px;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ── BUTTONS ── */
+.btn{font-family:var(--fd);font-size:10px;font-weight:700;letter-spacing:2px;padding:9px 18px;border-radius:6px;border:none;transition:all .25s;text-transform:uppercase;position:relative;overflow:hidden;white-space:nowrap;cursor:pointer;}
+.btn::after{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);transition:left .4s;}
+.btn:hover::after{left:100%}
+.btn:disabled{opacity:.35;pointer-events:none}
+.btn:hover:not(:disabled){transform:translateY(-1px)}
+.btn-c{background:linear-gradient(135deg,#00BBBB,#007799);color:#fff;box-shadow:0 0 16px rgba(0,200,200,.25)}
+.btn-c:hover:not(:disabled){box-shadow:0 0 28px rgba(0,255,255,.5)}
+.btn-gold{background:linear-gradient(135deg,#FFD700,#FF7700);color:#000;box-shadow:0 0 16px rgba(255,200,0,.25)}
+.btn-gold:hover:not(:disabled){box-shadow:0 0 28px rgba(255,200,0,.5)}
+.btn-red{background:linear-gradient(135deg,#FF3355,#AA0033);color:#fff;box-shadow:0 0 16px rgba(255,50,80,.2)}
+.btn-red:hover:not(:disabled){box-shadow:0 0 28px rgba(255,50,80,.4)}
+.btn-ghost{background:transparent;color:var(--g);border:1px solid var(--g)}
+.btn-ghost:hover:not(:disabled){background:rgba(0,255,200,.08);box-shadow:0 0 12px rgba(0,255,200,.2)}
+
+/* ── MODALS ── */
+.overlay{position:fixed;inset:0;background:rgba(4,6,15,.96);z-index:1000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(12px);padding:16px;}
+.modal{background:var(--bg3);border:1px solid var(--border);border-radius:16px;padding:36px 32px;width:100%;max-width:480px;position:relative;box-shadow:0 0 60px rgba(0,200,255,.08);}
+.modal::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--g),var(--gold),var(--g2),transparent);border-radius:16px 16px 0 0;}
+.modal h2{font-family:var(--fd);font-size:20px;color:var(--gold);letter-spacing:3px;margin-bottom:6px}
+.modal p{color:var(--muted);font-size:13px;line-height:1.6;margin-bottom:20px}
+.igroup{margin-bottom:14px}
+.igroup label{display:block;font-size:10px;letter-spacing:2px;color:var(--g);margin-bottom:6px;text-transform:uppercase}
+.ifield{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border2);color:var(--text);font-family:var(--fm);font-size:15px;padding:11px 14px;border-radius:8px;outline:none;transition:.3s;}
+.ifield:focus{border-color:var(--g);box-shadow:0 0 14px rgba(0,255,200,.15);background:rgba(0,255,200,.03)}
+.ifield::placeholder{color:var(--muted)}
+.avpick{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.avopt{font-size:24px;padding:6px 8px;border-radius:8px;border:2px solid transparent;transition:.2s;background:rgba(255,255,255,.03);cursor:pointer;}
+.avopt:hover,.avopt.sel{border-color:var(--gold);background:rgba(255,215,0,.1)}
+
+/* ── MAIN ── */
+main{padding:20px 0;position:relative;z-index:2}
+.sfeed{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:16px;max-height:80px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
+.sitem{font-family:var(--fm);font-size:10px;color:var(--muted);padding:2px 0;line-height:1.5}
+.sitem .hl{color:var(--g)}.sitem .gd{color:var(--gold)}.sitem .rd{color:var(--red)}
+
+/* ── HOME ── */
+#homeSection{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+@media(max-width:640px){#homeSection{grid-template-columns:1fr}}
+.rcard{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:22px;display:flex;flex-direction:column;gap:12px;}
+.rcard h3{font-family:var(--fd);font-size:12px;letter-spacing:3px;color:var(--gold);margin-bottom:2px}
+.rcard p{font-size:12px;color:var(--muted);line-height:1.5}
+
+/* ── RACE AREA ── */
+#raceArea{display:none}
+.race-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;}
+.stitle{font-family:var(--fd);font-size:clamp(13px,2vw,18px);color:var(--gold);letter-spacing:3px}
+.rinfo{font-family:var(--fm);font-size:11px;color:var(--muted);margin-top:3px}
+.race-btns{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.rstatus{font-family:var(--fd);font-size:10px;letter-spacing:3px;color:var(--muted);padding:6px 14px;border:1px solid var(--border2);border-radius:20px;transition:.3s}
+
+/* ── LOBBY ── */
+.lobby{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:16px;}
+.lhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px}
+.lhead-title{font-family:var(--fd);font-size:11px;letter-spacing:3px;color:var(--gold)}
+.code-badge{font-family:var(--fm);font-size:11px;color:var(--g);background:rgba(0,255,200,.07);border:1px solid rgba(0,255,200,.2);border-radius:6px;padding:4px 12px;transition:.2s;cursor:pointer;}
+.code-badge:hover{background:rgba(0,255,200,.14)}
+.plist{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px}
+.pcard{background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:10px;transition:.3s;}
+.pcard.ready{border-color:rgba(0,255,136,.4);box-shadow:0 0 8px rgba(0,255,136,.1)}
+.pcard.ishost{border-color:rgba(255,215,0,.3)}
+.pcard.isme{border-color:rgba(0,255,200,.4)}
+.pav{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.pinfo{flex:1;min-width:0}
+.pinfo-name{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pinfo-status{font-size:9px;letter-spacing:1px;margin-top:2px}
+.s-ready{color:#00FF88}.s-wait{color:var(--muted)}.s-host{color:var(--gold)}
+
+/* ── RACE TRACK — TIME OF DAY ── */
+.track-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:16px;overflow:hidden;}
+.twrap-title{font-family:var(--fd);font-size:10px;letter-spacing:4px;color:var(--muted);margin-bottom:6px;display:flex;align-items:center;gap:12px;}
+.tod-label{font-size:9px;letter-spacing:2px;padding:3px 10px;border-radius:20px;border:1px solid rgba(255,255,255,.1);font-family:var(--fm);}
+
+/* Dynamic track based on time of day */
+.track{
+  position:relative;height:64px;margin:10px 0;
+  display:flex;align-items:center;
+  border-radius:12px;overflow:visible;
+}
+
+/* Sky / time-of-day background */
+.track-bg{
+  position:absolute;left:0;right:0;height:100%;border-radius:12px;overflow:hidden;
+}
+/* Asphalt road */
+.track-road{
+  position:absolute;left:0;right:0;bottom:0;height:70%;border-radius:0 0 12px 12px;
+}
+/* Road markings */
+.track-road::after{
+  content:'';position:absolute;top:45%;left:0;right:0;height:3px;
+  background:repeating-linear-gradient(90deg,transparent,transparent 18px,rgba(255,255,255,.15) 18px,rgba(255,255,255,.15) 30px);
+}
+/* Road edge lines */
+.track-road::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:rgba(255,200,0,.25);
+  box-shadow:0 0 4px rgba(255,200,0,.2);
+}
+
+/* MORNING track */
+.track.morning .track-bg{background:linear-gradient(180deg,#FF9966 0%,#FFB347 30%,#87CEEB 60%,#87CEEB 100%)}
+.track.morning .track-road{background:linear-gradient(180deg,#4a4a4a,#333333)}
+/* Sun */
+.track.morning .track-bg::before{content:'☀';position:absolute;right:15px;top:3px;font-size:18px;filter:drop-shadow(0 0 8px #FFD700);animation:sunBob 3s ease-in-out infinite;}
+@keyframes sunBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
+
+/* AFTERNOON track */
+.track.afternoon .track-bg{background:linear-gradient(180deg,#2980B9 0%,#5DADE2 40%,#85C1E9 100%)}
+.track.afternoon .track-road{background:linear-gradient(180deg,#555,#3a3a3a)}
+.track.afternoon .track-bg::before{content:'☀';position:absolute;top:4px;right:40px;font-size:16px;filter:drop-shadow(0 0 10px #FFF176);}
+
+/* SUNSET track */
+.track.sunset .track-bg{background:linear-gradient(180deg,#2C3E50 0%,#E74C3C 25%,#F39C12 55%,#8E44AD 100%)}
+.track.sunset .track-road{background:linear-gradient(180deg,#3d3d3d,#222)}
+.track.sunset .track-bg::before{content:'🌅';position:absolute;right:12px;top:2px;font-size:16px;}
+
+/* NIGHT track */
+.track.night .track-bg{background:linear-gradient(180deg,#020817 0%,#0a0e1f 50%,#0d1117 100%)}
+.track.night .track-road{background:linear-gradient(180deg,#1a1a2e,#0d0d0d)}
+/* Street lights glow */
+.track.night .track-bg::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 20% 0%,rgba(255,200,80,.05) 0%,transparent 40%),radial-gradient(ellipse at 60% 0%,rgba(255,200,80,.05) 0%,transparent 40%);}
+/* Stars */
+.track.night .track-bg::before{content:'✦ ✧ ✦ · ✧ · ✦';position:absolute;top:3px;left:12px;font-size:7px;color:rgba(255,255,255,.5);letter-spacing:6px;}
+
+/* Finish line */
+.tfinish{
+  position:absolute;right:0;top:0;bottom:0;width:8px;z-index:3;
+  background:repeating-linear-gradient(180deg,#fff 0,#fff 7px,#1a1a1a 7px,#1a1a1a 14px);
+  border-radius:0 12px 12px 0;
+  box-shadow:-3px 0 10px rgba(255,255,255,.35);
+}
+.tfinish::before{content:'🏁';position:absolute;top:-22px;left:50%;transform:translateX(-50%);font-size:15px;}
+
+/* Progress fill */
+.tfill{
+  position:absolute;left:0;height:100%;border-radius:12px;
+  transition:width .3s cubic-bezier(.4,0,.2,1);opacity:.12;
+  pointer-events:none;
+}
+
+/* THE VEHICLE */
+.tcar{
+  position:absolute;font-size:28px;line-height:1;z-index:10;
+  transform:translateX(-50%);
+  transition:left .35s cubic-bezier(.34,1.56,.64,1);
+  user-select:none;will-change:left;
+  filter:drop-shadow(0 3px 6px rgba(0,0,0,.7));
+}
+.tcar.mine{
+  filter:drop-shadow(0 0 14px var(--gold)) drop-shadow(0 0 5px var(--gold)) drop-shadow(0 3px 6px rgba(0,0,0,.7));
+}
+.tcar.finished{
+  animation:celebrate .7s ease-in-out;
+}
+@keyframes celebrate{
+  0%,100%{transform:translateX(-50%) scale(1)}
+  25%{transform:translateX(-50%) scale(1.5) rotate(-12deg)}
+  50%{transform:translateX(-50%) scale(1.3) rotate(8deg)}
+  75%{transform:translateX(-50%) scale(1.4) rotate(-5deg)}
+}
+
+/* ── EXHAUST SMOKE PARTICLES ── */
+.smoke{
+  position:absolute;border-radius:50%;pointer-events:none;z-index:8;
+  animation:smokeFade 1.2s ease-out forwards;
+}
+@keyframes smokeFade{
+  0%{opacity:.85;transform:translate(0,0) scale(1)}
+  40%{opacity:.5;transform:translate(-18px,-12px) scale(2.2)}
+  100%{opacity:0;transform:translate(-40px,-30px) scale(4)}
+}
+.spark{
+  position:absolute;pointer-events:none;z-index:8;
+  animation:sparkFly .6s ease-out forwards;
+}
+@keyframes sparkFly{
+  0%{opacity:1;transform:translate(0,0) scale(1)}
+  100%{opacity:0;transform:translate(var(--sx),var(--sy)) scale(0.2)}
+}
+.speedline{
+  position:absolute;height:2px;border-radius:1px;pointer-events:none;z-index:7;
+  animation:speedFade .45s ease-out forwards;transform-origin:right center;
+}
+@keyframes speedFade{
+  0%{opacity:.7;transform:scaleX(1)}
+  100%{opacity:0;transform:scaleX(0)}
+}
+
+/* Player info inside track */
+.tpinfo{
+  position:absolute;right:14px;top:50%;transform:translateY(-50%);
+  z-index:12;background:rgba(4,6,15,.9);padding:4px 11px;border-radius:20px;
+  border:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:7px;
+}
+.tpname{font-family:var(--fm);font-size:10px;max-width:70px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.twpm{font-family:var(--fd);font-size:10px;color:var(--gold);font-weight:700}
+.tprog{font-family:var(--fd);font-size:9px;color:var(--muted)}
+
+/* ── STATS ── */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+@media(max-width:500px){.stats{grid-template-columns:repeat(2,1fr)}}
+.stat{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;text-align:center;position:relative;overflow:hidden;}
+.stat::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.stat.wpm::before{background:linear-gradient(90deg,var(--g),var(--g2))}
+.stat.acc::before{background:linear-gradient(90deg,var(--gold),var(--gold2))}
+.stat.tim::before{background:linear-gradient(90deg,var(--red),#FF6644)}
+.stat.pos::before{background:linear-gradient(90deg,var(--purple),#6633CC)}
+.stat-v{font-family:var(--fd);font-size:clamp(20px,3.5vw,30px);font-weight:900;line-height:1;margin-bottom:3px}
+.stat.wpm .stat-v{color:var(--g);text-shadow:0 0 16px rgba(0,255,200,.4)}
+.stat.acc .stat-v{color:var(--gold);text-shadow:0 0 16px rgba(255,215,0,.4)}
+.stat.tim .stat-v{color:var(--red);text-shadow:0 0 16px rgba(255,50,80,.4)}
+.stat.pos .stat-v{color:var(--purple);text-shadow:0 0 16px rgba(187,102,255,.4)}
+.stat-l{font-size:9px;letter-spacing:3px;color:var(--muted);text-transform:uppercase}
+.pbar-wrap{height:4px;background:rgba(255,255,255,.04);border-radius:2px;margin-bottom:12px;overflow:hidden}
+.pbar{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--g),var(--g2));box-shadow:0 0 8px var(--g);transition:width .3s}
+
+/* ── TYPING SECTION ── */
+.typing-sec{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:16px;transition:.3s;}
+.typing-sec.active{border-color:rgba(0,255,200,.4);box-shadow:0 0 24px rgba(0,255,200,.07)}
+.typing-sec.err{border-color:var(--red);animation:shake .25s ease;box-shadow:0 0 24px rgba(255,50,80,.15)}
+@keyframes shake{0%,100%{transform:translateX(0)}30%{transform:translateX(-5px)}70%{transform:translateX(5px)}}
+
+.tdisplay{
+  font-family:var(--fm);font-size:clamp(14px,1.8vw,18px);
+  line-height:2.1;margin-bottom:16px;min-height:60px;
+  word-break:break-word;letter-spacing:.3px;
+  text-shadow:0 0 1px rgba(255,255,255,.05);
+}
+.word{display:inline-block;margin-right:.4em;border-radius:4px;padding:0 2px;transition:all .15s;position:relative;}
+.word.done{color:#00FF88;text-shadow:0 0 4px rgba(0,255,136,.3);}
+.word.wrong{color:var(--red);background:rgba(255,50,80,.1);text-decoration:underline wavy var(--red)}
+.word.active{color:var(--gold);background:rgba(255,215,0,.08);box-shadow:0 0 0 1px rgba(255,215,0,.25);}
+.word.pending{color:var(--muted)}
+.ch{border-radius:1px;transition:color .04s}
+.ch.ok{color:#00FF88;text-shadow:0 0 3px rgba(0,255,136,.4);}
+.ch.bad{color:var(--red);background:rgba(255,50,80,.15)}
+.ch.cur{color:var(--gold);border-bottom:2px solid var(--gold);animation:blink3 .7s infinite;}
+@keyframes blink3{0%,100%{border-color:var(--gold)}50%{border-color:transparent}}
+.ch.un{color:rgba(255,215,0,.5)}
+
+.tinput{
+  width:100%;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);
+  color:var(--text);font-family:var(--fm);font-size:15px;
+  padding:12px 16px;border-radius:9px;outline:none;resize:none;transition:.3s;height:54px;
+  cursor:text !important;
+}
+.tinput:focus{border-color:var(--g);box-shadow:0 0 16px rgba(0,255,200,.12);background:rgba(0,255,200,.025)}
+.tinput:disabled{opacity:.35}
+
+/* ── COUNTDOWN ── */
+#cdOverlay{position:fixed;inset:0;background:rgba(4,6,15,.94);z-index:900;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;backdrop-filter:blur(8px);}
+#cdOverlay.show{display:flex}
+.cdn{font-family:var(--fd);font-size:clamp(80px,18vw,160px);font-weight:900;color:var(--gold);line-height:1;text-shadow:0 0 50px rgba(255,215,0,.7),0 0 100px rgba(255,215,0,.3);animation:pop .9s cubic-bezier(.175,.885,.32,1.275);}
+@keyframes pop{0%{transform:scale(2.2);opacity:0}60%{transform:scale(.92)}100%{transform:scale(1);opacity:1}}
+.cdl{font-family:var(--fd);font-size:12px;letter-spacing:8px;color:var(--g)}
+
+/* ── RESULT ── */
+.rgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:18px 0}
+@media(max-width:400px){.rgrid{grid-template-columns:1fr}}
+.rstat{background:rgba(255,255,255,.03);border:1px solid var(--border2);border-radius:10px;padding:12px;text-align:center}
+.rstat-v{font-family:var(--fd);font-size:26px;font-weight:900;color:var(--gold)}
+.rstat-l{font-size:9px;letter-spacing:2px;color:var(--muted);margin-top:3px}
+.gline{height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin:14px 0}
+.lbitem{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;margin-bottom:6px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.04);}
+.lbitem.r1{background:rgba(255,215,0,.07);border-color:rgba(255,215,0,.3)}
+.lbitem.r2{background:rgba(192,192,192,.07);border-color:rgba(192,192,192,.2)}
+.lbitem.r3{background:rgba(205,127,50,.07);border-color:rgba(205,127,50,.2)}
+.lbrank{font-family:var(--fd);font-size:15px;font-weight:900;width:28px;text-align:center}
+.r1 .lbrank{color:var(--gold)}.r2 .lbrank{color:#C0C0C0}.r3 .lbrank{color:#CD7F32}
+.lbname{flex:1;font-size:12px;font-weight:600}
+.lbwpm{font-family:var(--fd);font-size:14px;color:var(--gold);font-weight:700}
+
+/* ── SPECTATOR ── */
+.spec-bar{background:linear-gradient(135deg,rgba(153,63,255,.1),rgba(68,0,153,.1));border:1px solid rgba(153,63,255,.25);border-radius:9px;padding:10px 18px;text-align:center;margin-bottom:14px;font-family:var(--fd);font-size:10px;letter-spacing:3px;color:var(--purple);display:none;}
+.spec-bar.show{display:block}
+.slist{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.stag{background:rgba(153,63,255,.08);border:1px solid rgba(153,63,255,.18);border-radius:20px;padding:3px 10px;font-size:10px;color:var(--purple)}
+
+/* ── TOAST ── */
+#toast-c{position:fixed;top:16px;right:16px;z-index:2000;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{background:var(--bg3);border-radius:9px;padding:11px 16px;border-left:3px solid var(--g);font-size:12px;max-width:280px;animation:tIn .25s ease;box-shadow:0 4px 24px rgba(0,0,0,.5);}
+.toast.ok{border-color:#00FF88}.toast.er{border-color:var(--red)}.toast.gd{border-color:var(--gold)}
+@keyframes tIn{from{transform:translateX(110%);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes tOut{from{transform:translateX(0);opacity:1}to{transform:translateX(110%);opacity:0}}
+
+/* ── CONNECTION ── */
+.conn-dot{width:6px;height:6px;border-radius:50%;display:inline-block;margin-right:5px;}
+.conn-dot.ok{background:#00FF88;box-shadow:0 0 6px #00FF88}
+.conn-dot.bad{background:var(--red);box-shadow:0 0 6px var(--red)}
+.conn-dot.mid{background:var(--gold);box-shadow:0 0 6px var(--gold);animation:blink2 1s infinite}
+
+/* ── FOOTER ── */
+footer{border-top:1px solid var(--border);padding:16px 0;text-align:center;font-family:var(--fm);font-size:10px;color:var(--muted);letter-spacing:2px;position:relative;z-index:2;margin-top:20px;}
+footer span{color:var(--gold);font-family:var(--fd)}
+
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+
+/* ── LIGHTNING FLASH ── */
+.lightning-flash{
+  position:fixed;inset:0;background:rgba(200,220,255,0.08);
+  z-index:1;pointer-events:none;opacity:0;
+  animation:lightFlash 0.15s ease-out;
+}
+@keyframes lightFlash{
+  0%{opacity:1}
+  30%{opacity:0.6}
+  60%{opacity:0}
+  80%{opacity:0.3}
+  100%{opacity:0}
+}
+
+/* Rain overlay tint */
+body::after{
+  content:'';position:fixed;inset:0;
+  background:linear-gradient(180deg,rgba(0,20,40,.15) 0%,transparent 40%);
+  pointer-events:none;z-index:0;
+}
+</style>
+</head>
+<body>
+
+<!-- Rain Canvas -->
+<canvas id="rainCanvas"></canvas>
+<!-- Lightning Canvas -->
+<canvas id="lightningCanvas"></canvas>
+
+<div id="toast-c"></div>
+
+<div id="cdOverlay">
+  <div class="cdn" id="cdNum">3</div>
+  <div class="cdl" id="cdLabel">BERSIAP MENGETIK</div>
+</div>
+
+<!-- Setup Modal -->
+<div class="overlay" id="setupModal">
+  <div class="modal">
+    <h2>⚡ MASUK ARENA</h2>
+    <p>Selamat datang di <b style="color:var(--gold);font-family:var(--fd)">TypeRace ALHACKER168</b> — Adu kecepatan mengetik online real-time tanpa server!</p>
+    <div class="igroup">
+      <label>Nama Pemain</label>
+      <input class="ifield" id="inpName" placeholder="Nama kamu..." maxlength="20" autocomplete="off">
+    </div>
+    <div class="igroup">
+      <label>Pilih Avatar Kendaraanmu</label>
+      <div class="avpick" id="avpick">
+        <div class="avopt" data-e="🏎️">🏎️</div>
+        <div class="avopt" data-e="🚀">🚀</div>
+        <div class="avopt" data-e="⚡">⚡</div>
+        <div class="avopt" data-e="🔥">🔥</div>
+        <div class="avopt" data-e="💎">💎</div>
+        <div class="avopt" data-e="🦅">🦅</div>
+        <div class="avopt" data-e="🐉">🐉</div>
+        <div class="avopt" data-e="🌊">🌊</div>
+        <div class="avopt" data-e="🎯">🎯</div>
+        <div class="avopt" data-e="💀">💀</div>
+        <div class="avopt" data-e="🏍️">🏍️</div>
+        <div class="avopt" data-e="🛸">🛸</div>
+      </div>
+    </div>
+    <button class="btn btn-gold" id="btnEnter" style="width:100%;margin-top:8px;padding:12px">MASUK KE ARENA ▶</button>
+  </div>
+</div>
+
+<!-- Result Modal -->
+<div class="overlay" id="resultModal" style="display:none">
+  <div class="modal" style="max-width:550px">
+    <h2 id="resultTitle">🏆 HASIL LOMBA</h2>
+    <div class="rgrid" id="resultStats"></div>
+    <div class="gline"></div>
+    <div style="font-family:var(--fd);font-size:9px;letter-spacing:3px;color:var(--muted);margin-bottom:10px">KLASEMEN AKHIR</div>
+    <div id="resultLb" style="max-height:220px;overflow-y:auto"></div>
+    <div style="display:flex;gap:8px;margin-top:18px;flex-wrap:wrap">
+      <button class="btn btn-gold" id="btnPlayAgain" style="flex:1">MAIN LAGI</button>
+      <button class="btn btn-ghost" id="btnCloseResult" style="flex:1">KEMBALI LOBI</button>
+    </div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="wrap">
+    <div class="hinner">
+      <div class="logo">
+        <div class="logo-main">⌨ TYPERACE ALHACKER168</div>
+        <div class="logo-sub">ADU KECEPATAN MENGETIK ONLINE REAL-TIME</div>
+      </div>
+      <div class="hcontrols">
+        <select class="lsel" id="langSel">
+          <option value="id">🇮🇩 Indonesia</option>
+          <option value="en">🇺🇸 English</option>
+          <option value="ms">🇲🇾 Melayu</option>
+          <option value="es">🇪🇸 Español</option>
+          <option value="fr">🇫🇷 Français</option>
+          <option value="de">🇩🇪 Deutsch</option>
+          <option value="ja">🇯🇵 日本語</option>
+          <option value="zh">🇨🇳 中文</option>
+          <option value="ar">🇸🇦 العربية</option>
+          <option value="ko">🇰🇷 한국어</option>
+        </select>
+        <div class="pbadge">
+          <div class="pdot"></div>
+          <div class="pname" id="hdrName">—</div>
+        </div>
+        <button class="btn btn-ghost" id="btnChangeName" style="font-size:8px;padding:6px 10px">GANTI</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+<div class="wrap">
+  <div class="sfeed" id="sfeed">
+    <div class="sitem">⚡ <span class="hl">TypeRace ALHACKER168</span> — Siap berlomba! P2P WebRTC — tanpa server, tanpa Firebase.</div>
+  </div>
+
+  <!-- HOME -->
+  <div id="homeSection">
+    <div class="rcard">
+      <h3>🚀 Buat Room Baru</h3>
+      <p>Kamu jadi Host. Setelah room dibuat, bagikan kode ke teman untuk bergabung.</p>
+      <div class="igroup" style="margin-bottom:8px">
+        <label>Nama Room</label>
+        <input class="ifield" id="inpRoomName" placeholder="Nama room..." maxlength="25" autocomplete="off">
+      </div>
+      <div class="igroup" style="margin-bottom:8px">
+        <label>Maks Pemain</label>
+        <select class="lsel ifield" id="selMax" style="width:100%;color:var(--text)">
+          <option value="2">2 Pemain</option>
+          <option value="4" selected>4 Pemain</option>
+          <option value="6">6 Pemain</option>
+          <option value="8">8 Pemain</option>
+        </select>
+      </div>
+      <button class="btn btn-gold" id="btnCreate">BUAT ROOM ✦</button>
+    </div>
+    <div class="rcard">
+      <h3>🔗 Gabung Room</h3>
+      <p>Masukkan Peer ID Host dari teman, atau buka link undangan yang dikirim.</p>
+      <div class="igroup" style="margin-bottom:8px">
+        <label>Peer ID Host</label>
+        <input class="ifield" id="inpJoinCode" placeholder="Tempel ID host di sini..." maxlength="50" autocomplete="off">
+      </div>
+      <button class="btn btn-c" id="btnJoin" style="margin-bottom:14px">GABUNG →</button>
+      <div style="font-size:9px;letter-spacing:2px;color:var(--muted);margin-bottom:6px">STATUS KONEKSI</div>
+      <div style="font-family:var(--fm);font-size:11px;color:var(--muted);display:flex;align-items:center">
+        <span class="conn-dot mid" id="connDot"></span><span id="connText">Menginisialisasi PeerJS...</span>
+      </div>
+      <div style="font-size:10px;color:var(--muted);margin-top:8px">ID Kamu: <span id="myPeerId" style="color:var(--g);font-family:var(--fm);cursor:pointer" title="Klik copy">...</span></div>
+    </div>
+  </div>
+
+  <!-- RACE AREA -->
+  <div id="raceArea">
+    <div class="spec-bar" id="specBar">👁 MODE PENONTON — Anda sedang menonton perlombaan berlangsung</div>
+    <div class="race-head">
+      <div>
+        <div class="stitle">🏁 RACE ARENA</div>
+        <div class="rinfo" id="raceInfo">—</div>
+      </div>
+      <div class="race-btns">
+        <div class="rstatus" id="raceStatusBadge">MENUNGGU</div>
+        <button class="btn btn-c" id="btnReady" style="display:none">✓ SIAP</button>
+        <button class="btn btn-gold" id="btnStart" style="display:none">▶ MULAI LOMBA</button>
+        <button class="btn btn-red" id="btnLeave">✗ KELUAR</button>
+      </div>
+    </div>
+
+    <div class="lobby">
+      <div class="lhead">
+        <div class="lhead-title">PEMAIN DI ROOM</div>
+        <div class="code-badge" id="codeBadge" title="Klik salin link">📋 ID: <span id="codeSpan">—</span></div>
+      </div>
+      <div class="plist" id="playerList"></div>
+      <div class="slist" id="specList"></div>
+    </div>
+
+    <div class="track-wrap">
+      <div class="twrap-title">
+        🏁 LINTASAN BALAP
+        <span class="tod-label" id="todLabel">—</span>
+      </div>
+      <div id="trackList"></div>
+    </div>
+
+    <div class="stats">
+      <div class="stat wpm"><div class="stat-v" id="sWpm">0</div><div class="stat-l">WPM</div></div>
+      <div class="stat acc"><div class="stat-v" id="sAcc">100%</div><div class="stat-l">AKURASI</div></div>
+      <div class="stat tim"><div class="stat-v" id="sTim">0s</div><div class="stat-l">WAKTU</div></div>
+      <div class="stat pos"><div class="stat-v" id="sPos">—</div><div class="stat-l">POSISI</div></div>
+    </div>
+    <div class="pbar-wrap"><div class="pbar" id="pbar" style="width:0%"></div></div>
+
+    <div class="typing-sec" id="typingSec">
+      <div class="tdisplay" id="tdisplay">
+        <span style="color:var(--muted);font-family:var(--fd);font-size:12px;letter-spacing:4px">MENUNGGU RACE DIMULAI...</span>
+      </div>
+      <input type="text" class="tinput" id="tinput"
+        placeholder="Ketik kata di sini, tekan SPASI untuk lanjut kata berikutnya..."
+        disabled autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+    </div>
+  </div>
+</div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>TYPERACE ALHACKER168</span> — Real-time P2P via WebRTC · No Server · No Firebase · GitHub Pages Ready
+  </div>
+</footer>
+
+<script>
+// ================================================================
+//  TypeRace ALHACKER168 — Full Enhanced Version
+// ================================================================
+
+// ── BLOCK DEVTOOLS / VIEW SOURCE ───────────────────────────────
+(function(){
+  // Block right-click context menu
+  document.addEventListener('contextmenu', function(e){ e.preventDefault(); return false; });
+
+  // Block keyboard shortcuts for devtools and view source
+  document.addEventListener('keydown', function(e){
+    // F12
+    if(e.key === 'F12'){ e.preventDefault(); e.stopPropagation(); return false; }
+    // Ctrl+Shift+I / Cmd+Option+I (devtools)
+    if((e.ctrlKey||e.metaKey) && e.shiftKey && (e.key==='I'||e.key==='i')){ e.preventDefault(); return false; }
+    // Ctrl+Shift+J (console)
+    if((e.ctrlKey||e.metaKey) && e.shiftKey && (e.key==='J'||e.key==='j')){ e.preventDefault(); return false; }
+    // Ctrl+Shift+C (inspect element)
+    if((e.ctrlKey||e.metaKey) && e.shiftKey && (e.key==='C'||e.key==='c')){ e.preventDefault(); return false; }
+    // Ctrl+U (view source)
+    if((e.ctrlKey||e.metaKey) && (e.key==='U'||e.key==='u')){ e.preventDefault(); return false; }
+    // Ctrl+S (save)
+    if((e.ctrlKey||e.metaKey) && (e.key==='S'||e.key==='s')){ e.preventDefault(); return false; }
+  }, true);
+
+  // Devtools size detection (basic)
+  let devOpen = false;
+  const threshold = 160;
+  setInterval(function(){
+    const wDiff = window.outerWidth - window.innerWidth;
+    const hDiff = window.outerHeight - window.innerHeight;
+    if(wDiff > threshold || hDiff > threshold){
+      if(!devOpen){
+        devOpen = true;
+        document.body.innerHTML = '<div style="position:fixed;inset:0;background:#04060F;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;font-family:monospace;color:#00FFCC;font-size:18px;letter-spacing:4px;text-align:center;"><div style="font-size:48px">🔒</div><div>AKSES DITOLAK</div><div style="font-size:11px;color:#4A607A;letter-spacing:2px">INSPECT ELEMENT TIDAK DIIZINKAN</div></div>';
+      }
+    } else {
+      devOpen = false;
+    }
+  }, 500);
+})();
+
+// ── RAIN SYSTEM ───────────────────────────────────────────────
+const rainCanvas = document.getElementById('rainCanvas');
+const rainCtx = rainCanvas.getContext('2d');
+const lightCanvas = document.getElementById('lightningCanvas');
+const lightCtx = lightCanvas.getContext('2d');
+
+function resizeCanvases(){
+  rainCanvas.width = window.innerWidth;
+  rainCanvas.height = window.innerHeight;
+  lightCanvas.width = window.innerWidth;
+  lightCanvas.height = window.innerHeight;
+}
+resizeCanvases();
+window.addEventListener('resize', resizeCanvases);
+
+// Rain drops
+const rainDrops = [];
+const DROP_COUNT = 250;
+
+class RainDrop {
+  constructor(){this.reset(true);}
+  reset(initial=false){
+    this.x = Math.random() * rainCanvas.width;
+    this.y = initial ? Math.random() * rainCanvas.height : -20;
+    this.length = 12 + Math.random() * 22;
+    this.speed = 14 + Math.random() * 18;
+    this.opacity = 0.12 + Math.random() * 0.35;
+    this.thickness = 0.6 + Math.random() * 1.2;
+    this.angle = 0.15 + Math.random() * 0.08; // slight angle (wind)
+    this.r = Math.random() > 0.85 ? 60 : (Math.random() > 0.5 ? 140 : 200); // color variation
+    this.g = 200 + Math.floor(Math.random()*55);
+    this.b = 255;
+  }
+  update(){
+    this.x += Math.sin(this.angle) * this.speed * 0.4;
+    this.y += this.speed;
+    if(this.y > rainCanvas.height + 30) this.reset();
+  }
+  draw(ctx){
+    ctx.save();
+    ctx.strokeStyle = `rgba(${this.r},${this.g},${this.b},${this.opacity})`;
+    ctx.lineWidth = this.thickness;
+    ctx.lineCap = 'round';
+    ctx.shadowBlur = 2;
+    ctx.shadowColor = `rgba(180,220,255,0.3)`;
+    ctx.beginPath();
+    ctx.moveTo(this.x, this.y);
+    ctx.lineTo(this.x + Math.sin(this.angle)*this.length, this.y + this.length);
+    ctx.stroke();
+    ctx.restore();
+  }
+}
+
+// Splash particles at bottom
+class Splash {
+  constructor(x, y){
+    this.x = x; this.y = y;
+    this.particles = [];
+    for(let i=0;i<5;i++){
+      const ang = (Math.PI * (0.8 + Math.random()*0.4)) - Math.random()*0.5;
+      this.particles.push({
+        vx: Math.cos(ang) * (1+Math.random()*3),
+        vy: -Math.random()*3,
+        life:1, decay: 0.06+Math.random()*0.08,
+        r: 2+Math.random()*3
+      });
+    }
+    this.dead = false;
+  }
+  update(){
+    let alive = false;
+    this.particles.forEach(p=>{
+      p.vy += 0.2;
+      p.x = (p.x||this.x) + p.vx;
+      p.y = (p.y||this.y) + p.vy;
+      p.life -= p.decay;
+      if(p.life > 0) alive = true;
+    });
+    if(!alive) this.dead = true;
+  }
+  draw(ctx){
+    this.particles.forEach(p=>{
+      if(p.life<=0) return;
+      ctx.save();
+      ctx.globalAlpha = p.life * 0.4;
+      ctx.strokeStyle = 'rgba(160,210,255,0.7)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.arc(p.x||this.x, p.y||this.y, p.r*p.life, 0, Math.PI*2);
+      ctx.stroke();
+      ctx.restore();
+    });
+  }
+}
+
+for(let i=0;i<DROP_COUNT;i++) rainDrops.push(new RainDrop());
+const splashes = [];
+
+// ── LIGHTNING SYSTEM ──────────────────────────────────────────
+let nextLightning = 2000 + Math.random()*5000;
+let lightningActive = false;
+let lightBolts = [];
+let flashAlpha = 0;
+
+function generateBolt(x1,y1,x2,y2,depth,segs=8){
+  if(depth<=0) return [{x:x1,y:y1},{x:x2,y:y2}];
+  const pts = [{x:x1,y:y1}];
+  const dx=x2-x1, dy=y2-y1;
+  const dist = Math.sqrt(dx*dx+dy*dy);
+  for(let i=1;i<segs;i++){
+    const t = i/segs;
+    const px = x1+dx*t + (Math.random()-.5)*dist*0.45;
+    const py = y1+dy*t + (Math.random()-.5)*dist*0.15;
+    pts.push({x:px,y:py});
+  }
+  pts.push({x:x2,y:y2});
+  return pts;
+}
+
+function triggerLightning(){
+  lightningActive = true;
+  flashAlpha = 1;
+  const x = lightCanvas.width * (0.1 + Math.random()*0.8);
+  const startY = 0;
+  const endY = lightCanvas.height * (0.3 + Math.random()*0.5);
+  lightBolts = [{pts: generateBolt(x,startY,x+(Math.random()-.5)*200,endY,3,12), alpha:1, width:3+Math.random()*4}];
+  // Branch bolts
+  const branchCount = 2+Math.floor(Math.random()*4);
+  for(let i=0;i<branchCount;i++){
+    const bi = Math.floor(Math.random()*lightBolts[0].pts.length);
+    const bp = lightBolts[0].pts[bi];
+    const bx = bp.x + (Math.random()-.5)*300;
+    const by = endY * (0.3+Math.random()*0.7);
+    lightBolts.push({pts: generateBolt(bp.x,bp.y,bx,by,2,6), alpha:0.6, width:1+Math.random()*2});
+  }
+  // Second flash (flicker)
+  setTimeout(()=>{ flashAlpha = 0.5; }, 80);
+  setTimeout(()=>{ flashAlpha = 0; lightningActive = false; lightBolts = []; }, 200);
+  // Thunder shake
+  document.body.style.animation = 'none';
+  requestAnimationFrame(()=>{
+    document.body.style.transition = 'transform 0.06s';
+    document.body.style.transform = `translate(${(Math.random()-.5)*4}px,${(Math.random()-.5)*3}px)`;
+    setTimeout(()=>document.body.style.transform='',120);
+  });
+}
+
+function drawLightning(){
+  lightCtx.clearRect(0,0,lightCanvas.width,lightCanvas.height);
+  if(!lightningActive) return;
+
+  // Flash overlay
+  if(flashAlpha > 0){
+    lightCtx.fillStyle = `rgba(180,210,255,${flashAlpha*0.07})`;
+    lightCtx.fillRect(0,0,lightCanvas.width,lightCanvas.height);
+  }
+
+  lightBolts.forEach(bolt=>{
+    if(bolt.pts.length < 2) return;
+    // Outer glow
+    lightCtx.save();
+    lightCtx.shadowBlur = 40;
+    lightCtx.shadowColor = 'rgba(150,180,255,0.9)';
+    lightCtx.strokeStyle = `rgba(200,220,255,${bolt.alpha*0.4})`;
+    lightCtx.lineWidth = bolt.width * 4;
+    lightCtx.lineCap = 'round';
+    lightCtx.lineJoin = 'round';
+    lightCtx.beginPath();
+    lightCtx.moveTo(bolt.pts[0].x, bolt.pts[0].y);
+    bolt.pts.slice(1).forEach(p=>lightCtx.lineTo(p.x,p.y));
+    lightCtx.stroke();
+    // Core bright
+    lightCtx.shadowBlur = 15;
+    lightCtx.shadowColor = 'rgba(255,255,255,1)';
+    lightCtx.strokeStyle = `rgba(255,255,255,${bolt.alpha})`;
+    lightCtx.lineWidth = bolt.width;
+    lightCtx.beginPath();
+    lightCtx.moveTo(bolt.pts[0].x, bolt.pts[0].y);
+    bolt.pts.slice(1).forEach(p=>lightCtx.lineTo(p.x,p.y));
+    lightCtx.stroke();
+    lightCtx.restore();
+  });
+}
+
+// ── TIME OF DAY ───────────────────────────────────────────────
+function getTimeOfDay(){
+  const h = new Date().getHours();
+  if(h>=5 && h<10) return 'morning';
+  if(h>=10 && h<16) return 'afternoon';
+  if(h>=16 && h<20) return 'sunset';
+  return 'night';
+}
+function getTodLabel(){
+  const t = getTimeOfDay();
+  const labels = {morning:'☀ PAGI HARI',afternoon:'🌤 SIANG HARI',sunset:'🌅 SENJA',night:'🌙 MALAM HARI'};
+  const colors = {morning:'rgba(255,200,80,.8)',afternoon:'rgba(100,180,255,.8)',sunset:'rgba(255,100,80,.8)',night:'rgba(100,120,255,.8)'};
+  return {label:labels[t], color:colors[t]};
+}
+
+// ── MAIN RENDER LOOP ──────────────────────────────────────────
+let lastTime = 0;
+function mainLoop(ts){
+  const dt = ts - lastTime; lastTime = ts;
+
+  // Rain
+  rainCtx.clearRect(0,0,rainCanvas.width,rainCanvas.height);
+  rainDrops.forEach(d=>{
+    d.update();
+    d.draw(rainCtx);
+    // Occasional splash at bottom
+    if(d.y >= rainCanvas.height-10 && Math.random()<0.02){
+      splashes.push(new Splash(d.x, rainCanvas.height-5));
+    }
+  });
+  // Splashes
+  for(let i=splashes.length-1;i>=0;i--){
+    splashes[i].update();
+    splashes[i].draw(rainCtx);
+    if(splashes[i].dead) splashes.splice(i,1);
+  }
+
+  // Lightning timing
+  nextLightning -= dt;
+  if(nextLightning <= 0 && !lightningActive){
+    triggerLightning();
+    nextLightning = 3000 + Math.random()*8000;
+  }
+  drawLightning();
+
+  requestAnimationFrame(mainLoop);
+}
+requestAnimationFrame(mainLoop);
+
+// ── TEXTS ──────────────────────────────────────────────────────
+const TEXTS={
+  id:["Teknologi informasi telah mengubah cara kita berkomunikasi dan bekerja setiap harinya dengan sangat drastis",
+      "Kecepatan mengetik adalah keterampilan penting yang harus dikuasai di era digital yang terus berkembang",
+      "Indonesia adalah negara kepulauan terbesar di dunia dengan lebih dari tujuh belas ribu pulau yang indah",
+      "Belajar dengan tekun dan konsisten setiap hari akan membawa hasil yang luar biasa dalam kehidupan nyata",
+      "Semangat juang yang tinggi dan kerja keras tanpa henti adalah kunci kesuksesan setiap individu berbakat",
+      "Inovasi teknologi terus mendorong kemajuan peradaban manusia ke tingkat yang lebih tinggi dari sebelumnya"],
+  en:["The quick brown fox jumps over the lazy dog near the beautiful riverbank in the morning sunshine",
+      "Technology has transformed the way we communicate collaborate and share information across the modern world",
+      "Practice makes perfect when it comes to developing your typing speed accuracy and keyboard fluency",
+      "The future belongs to those who believe in the beauty of their dreams and work hard daily",
+      "Innovation drives progress and opens new doors to incredible opportunities never imagined before"],
+  ms:["Malaysia adalah sebuah negara yang kaya dengan kepelbagaian budaya tradisi dan warisan yang sangat unik",
+      "Kelajuan menaip adalah kemahiran penting dalam dunia digital yang semakin maju dan berkembang pesat hari ini"],
+  es:["La velocidad de escritura es una habilidad importante en la era digital moderna y tecnologica",
+      "La tecnologia ha transformado profundamente la forma en que nos comunicamos y trabajamos juntos"],
+  fr:["La technologie a transforme notre facon de communiquer et de travailler au quotidien dans le monde moderne",
+      "La vitesse de frappe est une competence essentielle dans le monde numerique actuel et connecte"],
+  de:["Technologie hat die Art und Weise wie wir kommunizieren und miteinander arbeiten grundlegend veraendert",
+      "Schreibgeschwindigkeit ist eine wichtige Faehigkeit im modernen digitalen Zeitalter von heute"],
+  ja:["技術革新は私たちのコミュニケーションと仕事の方法を根本から大きく変えました","タイピング速度はデジタル時代における非常に重要なスキルの一つです"],
+  zh:["技术创新从根本上改变了我们沟通和工作的方式推动了社会进步","打字速度是数字时代中非常重要的一项基本技能"],
+  ar:["التكنولوجيا غيرت طريقة تواصلنا وعملنا بشكل جذري في العصر الحديث","سرعة الكتابة مهارة اساسية لا غنى عنها في العصر الرقمي المتقدم"],
+  ko:["기술 혁신은 우리의 소통 방식과 업무 방식을 근본적으로 바꾸어 놓았습니다","타이핑 속도는 현대 디지털 시대에서 매우 중요한 핵심 기술입니다"],
+};
+function randText(l){const a=TEXTS[l]||TEXTS.id;return a[Math.floor(Math.random()*a.length)]}
+
+// ── STATE ──────────────────────────────────────────────────────
+const S={
+  name:'',avatar:'🏎️',lang:'id',
+  peerId:'',peer:null,
+  isHost:false,isSpec:false,isReady:false,
+  raceOn:false,raceDone:false,
+  text:'',words:[],currentWordIdx:0,
+  currentInput:'',wrongWords:new Set(),
+  completedWords:0,startTime:null,
+  myProg:0,myWpm:0,myAcc:100,
+  timerIv:null,
+  conns:{},hostConn:null,
+  players:{},specs:{},
+  colors:['#00FFCC','#FFD700','#FF3366','#00AAFF','#BB66FF','#FF8844','#44FF88','#FF44BB'],
+  colorMap:{},maxPlayers:4,roomName:'',raceStatus:'waiting',
+};
+
+const $=id=>document.getElementById(id);
+function uid(n=8){return Math.random().toString(36).slice(2,2+n).toUpperCase()}
+function getColor(pid){
+  if(!S.colorMap[pid]){
+    const used=Object.values(S.colorMap);
+    const avail=S.colors.filter(c=>!used.includes(c));
+    S.colorMap[pid]=avail.length?avail[0]:S.colors[Object.keys(S.colorMap).length%S.colors.length];
+  }
+  return S.colorMap[pid];
+}
+function toast(msg,type='',ms=3000){
+  const el=document.createElement('div');
+  el.className=`toast${type?' '+type:''}`;el.textContent=msg;
+  $('toast-c').appendChild(el);
+  setTimeout(()=>{el.style.animation='tOut .25s ease forwards';setTimeout(()=>el.remove(),260)},ms);
+}
+function log(html){
+  const f=$('sfeed'),d=document.createElement('div');d.className='sitem';
+  const t=new Date().toLocaleTimeString('id',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  d.innerHTML=`<span style="color:var(--muted)">[${t}]</span> ${html}`;
+  f.appendChild(d);f.scrollTop=f.scrollHeight;
+  while(f.children.length>80)f.removeChild(f.firstChild);
+}
+function save(){try{localStorage.setItem('tr168',JSON.stringify({name:S.name,avatar:S.avatar,lang:S.lang}))}catch(e){}}
+function load(){
+  try{const d=JSON.parse(localStorage.getItem('tr168')||'null');
+    if(d){S.name=d.name||'';S.avatar=d.avatar||'🏎️';S.lang=d.lang||'id';}
+  }catch(e){}
+}
+
+// ── WORD ENGINE ────────────────────────────────────────────────
+function initWords(text){
+  S.words=text.trim().split(/\s+/);
+  S.currentWordIdx=0;S.currentInput='';S.wrongWords=new Set();S.completedWords=0;
+}
+function calcProgress(){return Math.round((S.completedWords/S.words.length)*100);}
+
+// ── RENDER WORDS ───────────────────────────────────────────────
+function renderWords(){
+  const d=$('tdisplay');
+  if(!S.words.length){d.innerHTML='';return;}
+  d.innerHTML='';
+  S.words.forEach((word,wi)=>{
+    const span=document.createElement('span');
+    span.className='word';span.id=`word-${wi}`;
+    if(wi<S.currentWordIdx){
+      span.classList.add(S.wrongWords.has(wi)?'wrong':'done');
+      span.textContent=word;
+    } else if(wi===S.currentWordIdx){
+      span.classList.add('active');
+      const typed=S.currentInput;
+      for(let ci=0;ci<word.length;ci++){
+        const ch=document.createElement('span');ch.className='ch';ch.textContent=word[ci];
+        if(ci<typed.length){ch.classList.add(typed[ci]===word[ci]?'ok':'bad');}
+        else if(ci===typed.length){ch.classList.add('cur');}
+        else{ch.classList.add('un');}
+        span.appendChild(ch);
+      }
+    } else {
+      span.classList.add('pending');span.textContent=word;
+    }
+    d.appendChild(span);
+  });
+  const aw=document.getElementById(`word-${S.currentWordIdx}`);
+  if(aw) aw.scrollIntoView({block:'nearest',behavior:'smooth'});
+}
+
+// ── SMOKE EXHAUST SYSTEM ───────────────────────────────────────
+function spawnSmoke(carEl, color){
+  const track = carEl.parentElement;
+  const carLeft = parseInt(carEl.style.left)||0;
+  const smokeCount = 3;
+  for(let i=0;i<smokeCount;i++){
+    const sm = document.createElement('div');
+    sm.className = 'smoke';
+    const sz = 6 + Math.random()*10;
+    const oy = (Math.random()-.5)*20;
+    const gray = Math.floor(100+Math.random()*100);
+    sm.style.cssText = `
+      left:${carLeft-16+Math.random()*8}px;
+      top:${track.offsetHeight/2 - sz/2 + oy}px;
+      width:${sz}px;height:${sz}px;
+      background:radial-gradient(circle,rgba(${gray},${gray},${gray},0.7) 0%,rgba(${gray},${gray},${gray},0) 70%);
+      animation-delay:${i*0.08}s;
+      animation-duration:${0.9+Math.random()*0.6}s;
+    `;
+    track.appendChild(sm);
+    setTimeout(()=>sm.remove(), 1600);
+  }
+}
+
+function spawnSparks(carEl){
+  const track = carEl.parentElement;
+  const carLeft = parseInt(carEl.style.left)||0;
+  const trackH = track.offsetHeight;
+  for(let i=0;i<5;i++){
+    const sp = document.createElement('div');
+    sp.className='spark';
+    const colors=['#FFD700','#FF8800','#FF4400','#FFFF00','#FF9500'];
+    const c=colors[Math.floor(Math.random()*colors.length)];
+    const sx=(Math.random()-.5)*60+'px';
+    const sy=(-20-Math.random()*30)+'px';
+    sp.style.cssText=`
+      left:${carLeft}px;top:${trackH*0.6}px;
+      width:3px;height:3px;border-radius:50%;background:${c};
+      box-shadow:0 0 4px ${c};
+      --sx:${sx};--sy:${sy};
+      animation-delay:${i*0.05}s;
+    `;
+    track.appendChild(sp);
+    setTimeout(()=>sp.remove(),700);
+  }
+}
+
+function spawnSpeedLines(track, carLeft){
+  const h = track.offsetHeight;
+  for(let i=0;i<4;i++){
+    const ln=document.createElement('div');
+    ln.className='speedline';
+    const w=20+Math.random()*50;
+    const y=8+Math.random()*(h-16);
+    ln.style.cssText=`left:${carLeft-w-5}px;top:${y}px;width:${w}px;background:rgba(255,215,0,${0.15+Math.random()*0.3});`;
+    track.appendChild(ln);
+    setTimeout(()=>ln.remove(),500);
+  }
+}
+
+// ── PEER JS ────────────────────────────────────────────────────
+function initPeer(){
+  try{S.peer=new Peer({debug:0,config:{iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun1.l.google.com:19302'}]}});}
+  catch(ex){log('<span class="rd">PeerJS gagal load.</span>');return;}
+  S.peer.on('open',id=>{
+    S.peerId=id;save();$('myPeerId').textContent=id;
+    setConn('ok','Siap — ID: '+id);
+    log(`🌐 Peer ID: <span class="hl">${id}</span>`);
+    S.peer.on('connection',conn=>{
+      if(!S.isHost) return;
+      conn.on('open',()=>hostOnConn(conn));
+      conn.on('error',()=>{});
+    });
+    checkUrlRoom();
+  });
+  S.peer.on('error',e=>{
+    setConn('bad','Error: '+e.type);
+    if(e.type==='peer-unavailable') toast('Host tidak ditemukan!','er');
+    else log(`<span class="rd">Peer error: ${e.type}</span>`);
+  });
+  S.peer.on('disconnected',()=>{setConn('mid','Reconnect...');try{S.peer.reconnect()}catch(e){}});
+}
+
+function setConn(t,m){$('connDot').className=`conn-dot ${t}`;$('connText').textContent=m;}
+$('myPeerId').addEventListener('click',()=>{
+  navigator.clipboard?.writeText(S.peerId).then(()=>toast('Peer ID disalin!','ok')).catch(()=>{});
+});
+
+// ── HOST LOGIC ─────────────────────────────────────────────────
+function hostOnConn(conn){
+  const pid=conn.peer;S.conns[pid]=conn;
+  conn.on('data',d=>hostRecv(pid,d));
+  conn.on('close',()=>{
+    const nm=S.players[pid]?.name||S.specs[pid]?.name||pid;
+    log(`👋 <span class="hl">${nm}</span> terputus`);
+    delete S.conns[pid];delete S.players[pid];delete S.specs[pid];delete S.colorMap[pid];
+    bcastState();renderLobby();renderTrack();
+  });
+  setTimeout(()=>sendTo(conn,{type:'WELCOME',state:mkState()}),200);
+}
+
+function hostRecv(pid,d){
+  switch(d.type){
+    case'JOIN':
+      if(d.asSpec){S.specs[pid]={id:pid,name:d.name,avatar:d.avatar};log(`👁 <span class="hl">${d.name}</span> menonton`);}
+      else{S.players[pid]={id:pid,name:d.name,avatar:d.avatar,ready:false,prog:0,wpm:0,done:false,finishTime:null};log(`👤 <span class="hl">${d.name}</span> bergabung`);}
+      bcastState();renderLobby();renderTrack();break;
+    case'READY':
+      if(S.players[pid]) S.players[pid].ready=d.ready;bcastState();renderLobby();break;
+    case'PROGRESS':
+      if(S.players[pid]){S.players[pid].prog=d.prog;S.players[pid].wpm=d.wpm;}bcastState();renderTrack();break;
+    case'FINISHED':
+      if(S.players[pid]){S.players[pid].done=true;S.players[pid].finishTime=d.finishTime;S.players[pid].wpm=d.wpm;S.players[pid].prog=100;log(`🏁 <span class="gd">${S.players[pid].name}</span> selesai! WPM: ${d.wpm}`);}
+      bcastState();checkAllDone();break;
+  }
+}
+
+function checkAllDone(){
+  const pls=Object.values(S.players);
+  if(pls.length>0&&pls.every(p=>p.done)){
+    S.raceStatus='finished';const lb=mkLeaderboard();bcastMsg({type:'RACE_OVER',players:lb});bcastState();showResult(lb);
+  }
+}
+function mkLeaderboard(){
+  return Object.values(S.players).sort((a,b)=>{
+    if(a.done&&b.done) return a.finishTime-b.finishTime;
+    if(a.done) return -1;if(b.done) return 1;return b.prog-a.prog;
+  });
+}
+function mkState(){
+  return{roomName:S.roomName,hostId:S.peerId,maxPlayers:S.maxPlayers,status:S.raceStatus,text:S.text,lang:S.lang,players:S.players,specs:S.specs};
+}
+function bcastMsg(msg){Object.values(S.conns).forEach(c=>sendTo(c,msg));}
+function bcastState(){bcastMsg({type:'STATE',state:mkState()});}
+function sendTo(conn,msg){try{conn.send(msg)}catch(e){}}
+
+// ── CLIENT LOGIC ───────────────────────────────────────────────
+function connectToHost(hostId){
+  if(!S.peer||!S.peerId){toast('Peer belum siap!','er');return}
+  setConn('mid','Menghubungkan...');
+  const conn=S.peer.connect(hostId,{reliable:true});
+  conn.on('open',()=>{S.hostConn=conn;setConn('ok','Terhubung!');log(`🔗 Terhubung ke <span class="hl">${hostId}</span>`);});
+  conn.on('data',d=>clientRecv(d));
+  conn.on('close',()=>{setConn('bad','Putus');toast('Host terputus!','er');if($('raceArea').style.display!=='none')leaveRoom(true);});
+  conn.on('error',()=>toast('Gagal konek','er'));
+}
+
+function clientRecv(d){
+  switch(d.type){
+    case'WELCOME':
+      applyState(d.state);
+      const pCount=Object.keys(d.state.players||{}).length;
+      S.isSpec=d.state.status==='playing'||pCount>=(d.state.maxPlayers||4);
+      S.hostConn.send({type:'JOIN',name:S.name,avatar:S.avatar,asSpec:S.isSpec});
+      showRaceArea(d.state.roomName||d.state.hostId,d.state.hostId);
+      if(S.isSpec) toast('Bergabung sebagai penonton','gd');break;
+    case'STATE':applyState(d.state);break;
+    case'COUNTDOWN':doCountdown(d.sec,null);break;
+    case'START':S.text=d.text;actualStartRace();break;
+    case'RACE_OVER':showResult(d.players);break;
+    case'RESET':resetRaceUI();break;
+  }
+}
+function applyState(st){
+  if(!st) return;
+  S.players=st.players||{};S.specs=st.specs||{};S.raceStatus=st.status;
+  if(st.text) S.text=st.text;
+  renderLobby();renderTrack();updateStatusBadge(st.status);
+}
+
+// ── AVATAR ─────────────────────────────────────────────────────
+document.querySelectorAll('.avopt').forEach(el=>{
+  el.addEventListener('click',()=>{
+    document.querySelectorAll('.avopt').forEach(x=>x.classList.remove('sel'));
+    el.classList.add('sel');S.avatar=el.dataset.e;
+  });
+});
+document.querySelector('.avopt')?.click();
+
+// ── SETUP ──────────────────────────────────────────────────────
+$('btnEnter').addEventListener('click',()=>{
+  const n=$('inpName').value.trim();
+  if(!n){toast('Masukkan nama!','er');return}
+  S.name=n;save();
+  $('hdrName').textContent=`${S.avatar} ${S.name}`;
+  $('setupModal').style.display='none';
+  log(`👋 <span class="hl">${S.name}</span> masuk arena`);
+});
+$('inpName').addEventListener('keydown',e=>{if(e.key==='Enter')$('btnEnter').click()});
+$('btnChangeName').addEventListener('click',()=>{$('inpName').value=S.name;$('setupModal').style.display='flex';});
+$('langSel').addEventListener('change',e=>{S.lang=e.target.value;save();});
+
+// ── CREATE ROOM ────────────────────────────────────────────────
+$('btnCreate').addEventListener('click',()=>{
+  if(!S.name){toast('Setup nama dulu!','er');return}
+  if(!S.peerId){toast('Koneksi belum siap!','er');return}
+  S.isHost=true;
+  S.roomName=$('inpRoomName').value.trim()||`Room-${uid(4)}`;
+  S.maxPlayers=parseInt($('selMax').value)||4;
+  S.text=randText(S.lang);S.raceStatus='waiting';
+  S.players[S.peerId]={id:S.peerId,name:S.name,avatar:S.avatar,ready:true,prog:0,wpm:0,done:false,finishTime:null};
+  showRaceArea(S.roomName,S.peerId);
+  log(`🚪 Room <span class="hl">${S.roomName}</span> | ID: <span class="gd">${S.peerId}</span>`);
+  toast('Room dibuat! Share ID ke teman','ok');
+});
+
+// ── JOIN ROOM ──────────────────────────────────────────────────
+$('btnJoin').addEventListener('click',()=>{
+  const code=$('inpJoinCode').value.trim();
+  if(!code){toast('Masukkan ID host!','er');return}
+  if(!S.name){toast('Setup nama dulu!','er');return}
+  if(!S.peerId){toast('Koneksi belum siap!','er');return}
+  S.isHost=false;S.raceStatus='waiting';
+  showRaceArea('Menghubungkan...',code);connectToHost(code);
+  log(`🔗 Join: <span class="hl">${code}</span>`);
+});
+
+// ── SHOW RACE AREA ─────────────────────────────────────────────
+function showRaceArea(name,code){
+  $('homeSection').style.display='none';$('raceArea').style.display='block';
+  $('raceInfo').textContent=`${name} | ID: ${code}`;$('codeSpan').textContent=code;
+  if(S.isSpec){$('specBar').classList.add('show');}
+  else{$('btnReady').style.display='block';if(S.isHost){$('btnStart').style.display='block';$('btnStart').disabled=false;}}
+  // Update time of day label
+  const tod=getTodLabel();
+  const todEl=$('todLabel');
+  todEl.textContent=tod.label;todEl.style.color=tod.color;todEl.style.borderColor=tod.color.replace('.8)','.3)');
+  renderLobby();renderTrack();
+}
+
+$('codeBadge').addEventListener('click',()=>{
+  const id=$('codeSpan').textContent;
+  const link=window.location.origin+window.location.pathname+'?room='+id;
+  navigator.clipboard?.writeText(link).then(()=>toast('Link disalin! Share ke teman','ok')).catch(()=>toast('ID: '+id,'gd'));
+});
+
+// ── RENDER LOBBY ───────────────────────────────────────────────
+function renderLobby(){
+  const pl=$('playerList');pl.innerHTML='';
+  Object.values(S.players).forEach(p=>{
+    const c=getColor(p.id);const isme=p.id===S.peerId;const ishost=S.isHost&&p.id===S.peerId;
+    const el=document.createElement('div');
+    el.className=`pcard${p.ready?' ready':''}${ishost?' ishost':''}${isme?' isme':''}`;
+    el.innerHTML=`<div class="pav" style="background:${c}1A;border:1.5px solid ${c}55">${p.avatar}</div>
+      <div class="pinfo">
+        <div class="pinfo-name" style="color:${isme?'var(--g)':c}">${p.name}${isme?' (Kamu)':''}</div>
+        <div class="pinfo-status ${p.ready?'s-ready':ishost?'s-host':'s-wait'}">${ishost?'👑 HOST':p.ready?'✓ SIAP':'○ Menunggu'}</div>
+      </div>`;
+    pl.appendChild(el);
+  });
+  const sl=$('specList');sl.innerHTML='';
+  Object.values(S.specs).forEach(s=>{const t=document.createElement('div');t.className='stag';t.textContent=`👁 ${s.name}`;sl.appendChild(t);});
+}
+
+// ── RENDER TRACK ───────────────────────────────────────────────
+const todClass = getTimeOfDay();
+let lastSmokeTick = {};
+
+function renderTrack(){
+  const tl=$('trackList');
+  const pls=Object.values(S.players).sort((a,b)=>b.prog-a.prog);
+  const IDS=new Set(pls.map(p=>p.id));
+  Array.from(tl.children).forEach(el=>{const pid=el.id?.slice(2);if(pid&&!IDS.has(pid))el.remove();});
+
+  pls.forEach(p=>{
+    const c=getColor(p.id);const isme=p.id===S.peerId;
+    let tr=document.getElementById(`t-${p.id}`);
+    if(!tr){
+      tr=document.createElement('div');tr.className=`track ${todClass}`;tr.id=`t-${p.id}`;
+      tr.innerHTML=`
+        <div class="track-bg"></div>
+        <div class="track-road"></div>
+        <div class="tfill" id="f-${p.id}" style="background:${c}"></div>
+        <div class="tfinish"></div>
+        <div class="tcar${isme?' mine':''}" id="c-${p.id}" style="left:28px">${p.avatar||'🏎️'}</div>
+        <div class="tpinfo">
+          <span class="tpname" style="color:${c}">${p.name}${isme?' ★':''}</span>
+          <span class="twpm" id="w-${p.id}">0 WPM</span>
+          <span class="tprog" id="pg-${p.id}">0%</span>
+        </div>`;
+      tl.appendChild(tr);
+    }
+
+    const pct=Math.min(100,p.prog||0);
+    const fill=document.getElementById(`f-${p.id}`);
+    const car=document.getElementById(`c-${p.id}`);
+    const wpmEl=document.getElementById(`w-${p.id}`);
+    const progEl=document.getElementById(`pg-${p.id}`);
+
+    if(fill) fill.style.width=pct+'%';
+    if(wpmEl) wpmEl.textContent=(p.wpm||0)+' WPM';
+    if(progEl) progEl.textContent=pct+'%';
+
+    if(car){
+      requestAnimationFrame(()=>{
+        const finishX=tr.offsetWidth-14;
+        const startX=28;
+        let newLeft;
+        if(pct>=100){
+          newLeft=finishX;
+          if(!car.classList.contains('finished')){
+            car.classList.add('finished');
+            setTimeout(()=>car.classList.remove('finished'),800);
+          }
+        } else {
+          newLeft=startX+(pct/100)*(finishX-startX-35);
+        }
+        const prevLeft=parseInt(car.style.left)||startX;
+        car.style.left=newLeft+'px';
+
+        // Exhaust smoke — for all players
+        const now=Date.now();
+        if(newLeft>prevLeft+3 && S.raceOn){
+          if(!lastSmokeTick[p.id]||now-lastSmokeTick[p.id]>120){
+            spawnSmoke(car,c);
+            lastSmokeTick[p.id]=now;
+          }
+          if(newLeft>prevLeft+12){
+            spawnSpeedLines(tr,newLeft);
+            if(Math.random()<0.3) spawnSparks(car);
+          }
+        }
+      });
+    }
+  });
+}
+
+function updateStatusBadge(status){
+  const b=$('raceStatusBadge');
+  const labels={waiting:'MENUNGGU',countdown:'COUNTDOWN',playing:'BERLANGSUNG',finished:'SELESAI'};
+  const cols={waiting:'var(--muted)',countdown:'var(--gold)',playing:'#00FF88',finished:'var(--purple)'};
+  b.textContent=labels[status]||status?.toUpperCase()||'—';
+  b.style.color=cols[status]||'var(--muted)';b.style.borderColor=cols[status]||'var(--border2)';
+}
+
+// ── READY ──────────────────────────────────────────────────────
+$('btnReady').addEventListener('click',()=>{
+  if(S.raceOn) return;
+  S.isReady=!S.isReady;
+  $('btnReady').textContent=S.isReady?'✓ SIAP (Batal)':'✓ SIAP';
+  $('btnReady').className=`btn ${S.isReady?'btn-red':'btn-c'}`;
+  if(S.isHost){if(S.players[S.peerId]) S.players[S.peerId].ready=S.isReady;bcastState();renderLobby();}
+  else if(S.hostConn){S.hostConn.send({type:'READY',ready:S.isReady});if(S.players[S.peerId]) S.players[S.peerId].ready=S.isReady;renderLobby();}
+});
+
+// ── START RACE ─────────────────────────────────────────────────
+$('btnStart').addEventListener('click',()=>{
+  if(!S.isHost) return;
+  S.text=randText(S.lang);S.raceStatus='countdown';bcastState();
+  bcastMsg({type:'COUNTDOWN',sec:3});
+  doCountdown(3,()=>{
+    S.raceStatus='playing';bcastMsg({type:'START',text:S.text});bcastState();actualStartRace();
+  });
+});
+
+// ── COUNTDOWN ─────────────────────────────────────────────────
+function doCountdown(sec,cb){
+  const ov=$('cdOverlay'),num=$('cdNum'),lbl=$('cdLabel');
+  ov.classList.add('show');lbl.textContent='BERSIAP MENGETIK';
+  num.textContent=sec;num.style.color='var(--gold)';
+  let n=sec;
+  const iv=setInterval(()=>{
+    n--;
+    if(n<=0){
+      clearInterval(iv);num.textContent='GO!';num.style.color='#00FF88';lbl.textContent='MENGETIK SEKARANG!';
+      setTimeout(()=>{ov.classList.remove('show');num.style.color='var(--gold)';if(cb)cb();},700);
+    } else {
+      num.textContent=n;num.style.animation='none';
+      requestAnimationFrame(()=>requestAnimationFrame(()=>num.style.animation='pop .9s cubic-bezier(.175,.885,.32,1.275)'));
+    }
+  },1000);
+}
+
+// ── ACTUAL START ───────────────────────────────────────────────
+function actualStartRace(){
+  S.raceOn=true;S.raceDone=false;S.startTime=Date.now();
+  initWords(S.text);$('cdOverlay').classList.remove('show');
+  $('btnReady').style.display='none';$('btnStart').style.display='none';
+  const inp=$('tinput');inp.disabled=false;inp.value='';
+  if(!S.isSpec) inp.focus();
+  renderWords();$('typingSec').classList.add('active');$('pbar').style.width='0%';
+  S.timerIv=setInterval(updateStats,150);
+  updateStatusBadge('playing');
+  log(`🏁 <span class="gd">RACE DIMULAI!</span>`);
+}
+
+// ── INPUT HANDLER ──────────────────────────────────────────────
+$('tinput').addEventListener('keydown',e=>{
+  if(!S.raceOn||S.raceDone||S.isSpec) return;
+  if(e.key===' '){
+    e.preventDefault();
+    const typed=$('tinput').value.trim();
+    if(!typed) return;
+    const currentWord=S.words[S.currentWordIdx];
+    const isCorrect=typed===currentWord;
+    if(!isCorrect){S.wrongWords.add(S.currentWordIdx);$('typingSec').classList.add('err');setTimeout(()=>$('typingSec').classList.remove('err'),250);}
+    S.currentWordIdx++;S.completedWords=S.currentWordIdx;S.currentInput='';$('tinput').value='';
+    S.myProg=calcProgress();$('pbar').style.width=S.myProg+'%';
+    if(S.players[S.peerId]){S.players[S.peerId].prog=S.myProg;S.players[S.peerId].wpm=S.myWpm;}
+    renderTrack();
+    if(!S.isHost&&S.hostConn) S.hostConn.send({type:'PROGRESS',prog:S.myProg,wpm:S.myWpm});
+    if(S.isHost) bcastState();
+    if(S.currentWordIdx>=S.words.length){S.myProg=100;$('pbar').style.width='100%';if(S.players[S.peerId]) S.players[S.peerId].prog=100;renderTrack();setTimeout(()=>finishRace(),50);return;}
+    renderWords();updateStats();return;
+  }
+  if(e.key==='Backspace'){setTimeout(()=>{S.currentInput=$('tinput').value;renderWords();},0);return;}
+});
+
+$('tinput').addEventListener('input',e=>{
+  if(!S.raceOn||S.raceDone||S.isSpec) return;
+  let val=$('tinput').value.replace(/ /g,'');
+  if($('tinput').value!==val) $('tinput').value=val;
+  S.currentInput=val;renderWords();updateStats();
+});
+
+// ── STATS ──────────────────────────────────────────────────────
+function updateStats(){
+  if(!S.startTime||!S.raceOn) return;
+  const el=(Date.now()-S.startTime)/1000;
+  $('sTim').textContent=Math.floor(el)+'s';
+  S.myWpm=el>0?Math.round((S.completedWords/el)*60):0;$('sWpm').textContent=S.myWpm;
+  const correctWords=S.completedWords-S.wrongWords.size;
+  S.myAcc=S.completedWords>0?Math.round(correctWords/S.completedWords*100):100;$('sAcc').textContent=S.myAcc+'%';
+  const sorted=Object.values(S.players).sort((a,b)=>b.prog-a.prog);
+  const rank=sorted.findIndex(p=>p.id===S.peerId)+1;$('sPos').textContent=['🥇','🥈','🥉'][rank-1]||'#'+rank;
+}
+
+// ── FINISH ────────────────────────────────────────────────────
+function finishRace(){
+  if(S.raceDone) return;S.raceDone=true;clearInterval(S.timerIv);
+  $('tinput').disabled=true;$('typingSec').classList.remove('active');
+  const el=(Date.now()-S.startTime)/1000;
+  const finalWpm=Math.round(S.words.length/el*60);
+  S.myWpm=finalWpm;$('sWpm').textContent=finalWpm;
+  toast(`🏁 Selesai! ${finalWpm} WPM`,'gd',4000);
+  log(`🏆 <span class="gd">${S.name}</span> selesai! WPM: ${finalWpm}`);
+  if(S.isHost){
+    if(S.players[S.peerId]) Object.assign(S.players[S.peerId],{done:true,finishTime:Date.now(),wpm:finalWpm,prog:100});
+    bcastState();checkAllDone();
+  } else if(S.hostConn){S.hostConn.send({type:'FINISHED',finishTime:Date.now(),wpm:finalWpm});}
+}
+
+// ── RESULT ────────────────────────────────────────────────────
+function showResult(lb){
+  $('resultModal').style.display='flex';
+  const myRank=(lb||[]).findIndex(p=>p.id===S.peerId)+1||1;
+  const medals=['🥇','🥈','🥉'];
+  $('resultTitle').textContent=myRank===1?'🏆 ANDA MENANG!':`${medals[myRank-1]||'#'+myRank} HASIL LOMBA`;
+  const elapsed=S.startTime?(Date.now()-S.startTime)/1000:0;
+  $('resultStats').innerHTML=`
+    <div class="rstat"><div class="rstat-v" style="color:var(--g)">${S.myWpm}</div><div class="rstat-l">WPM</div></div>
+    <div class="rstat"><div class="rstat-v">${S.myAcc}%</div><div class="rstat-l">AKURASI</div></div>
+    <div class="rstat"><div class="rstat-v" style="color:var(--red)">${Math.round(elapsed)}s</div><div class="rstat-l">WAKTU</div></div>
+    <div class="rstat"><div class="rstat-v" style="color:var(--purple)">${medals[myRank-1]||'#'+myRank}</div><div class="rstat-l">PERINGKAT</div></div>`;
+  const rlb=$('resultLb');rlb.innerHTML='';
+  (lb||Object.values(S.players).sort((a,b)=>b.prog-a.prog)).forEach((p,i)=>{
+    const el=document.createElement('div');el.className=`lbitem${i===0?' r1':i===1?' r2':i===2?' r3':''}`;
+    el.innerHTML=`<div class="lbrank">${medals[i]||i+1}</div>
+      <div style="font-size:18px">${p.avatar||'🏎️'}</div>
+      <div class="lbname" style="color:${p.id===S.peerId?'var(--g)':'var(--text)'}">${p.name}${p.id===S.peerId?' (Kamu)':''}</div>
+      <div><div class="lbwpm">${p.wpm||0}</div><div style="font-size:9px;color:var(--muted)">WPM</div></div>`;
+    rlb.appendChild(el);
+  });
+}
+
+$('btnPlayAgain').addEventListener('click',()=>{
+  $('resultModal').style.display='none';resetRaceUI();
+  if(S.isHost){
+    S.raceStatus='waiting';
+    Object.values(S.players).forEach(p=>{p.ready=p.id===S.peerId;p.prog=0;p.wpm=0;p.done=false;p.finishTime=null;});
+    bcastState();bcastMsg({type:'RESET'});
+    $('btnStart').style.display='block';renderLobby();renderTrack();
+  }
+});
+$('btnCloseResult').addEventListener('click',()=>{$('resultModal').style.display='none';leaveRoom();});
+
+function resetRaceUI(){
+  S.raceOn=false;S.raceDone=false;S.words=[];S.currentWordIdx=0;
+  S.currentInput='';S.wrongWords=new Set();S.completedWords=0;S.startTime=null;
+  clearInterval(S.timerIv);$('tinput').value='';$('tinput').disabled=true;
+  $('pbar').style.width='0%';$('sWpm').textContent='0';$('sAcc').textContent='100%';
+  $('sTim').textContent='0s';$('sPos').textContent='—';
+  $('tdisplay').innerHTML='<span style="color:var(--muted);font-family:var(--fd);font-size:12px;letter-spacing:4px">MENUNGGU RACE DIMULAI...</span>';
+  $('typingSec').classList.remove('active','err');
+  if(!S.isSpec){$('btnReady').style.display='block';$('btnReady').textContent='✓ SIAP';$('btnReady').className='btn btn-c';S.isReady=false;}
+  updateStatusBadge('waiting');
+}
+
+$('btnLeave').addEventListener('click',()=>leaveRoom());
+function leaveRoom(forced=false){
+  clearInterval(S.timerIv);
+  if(S.hostConn){try{S.hostConn.close()}catch(e){}S.hostConn=null;}
+  Object.values(S.conns).forEach(c=>{try{c.close()}catch(e){}});
+  S.conns={};S.isHost=false;S.isSpec=false;S.isReady=false;S.raceOn=false;S.raceDone=false;
+  S.players={};S.specs={};S.colorMap={};S.raceStatus='waiting';
+  $('raceArea').style.display='none';$('homeSection').style.display='grid';
+  $('specBar').classList.remove('show');$('cdOverlay').classList.remove('show');$('resultModal').style.display='none';
+  $('btnReady').style.display='none';$('btnStart').style.display='none';$('trackList').innerHTML='';
+  if(!forced) toast('Keluar dari room','gd');
+  log(`👋 <span class="hl">${S.name}</span> keluar dari room`);
+}
+
+function checkUrlRoom(){
+  const p=new URLSearchParams(window.location.search);const r=p.get('room');
+  if(r&&S.name){$('inpJoinCode').value=r;setTimeout(()=>$('btnJoin').click(),500);}
+}
+
+// ── INIT ──────────────────────────────────────────────────────
+load();
+if(S.name){
+  $('inpName').value=S.name;$('hdrName').textContent=`${S.avatar} ${S.name}`;
+  $('langSel').value=S.lang;
+  document.querySelectorAll('.avopt').forEach(el=>{if(el.dataset.e===S.avatar)el.click();});
+  $('setupModal').style.display='none';
+  log(`👋 <span class="hl">${S.name}</span> kembali ke arena`);
+}
+initPeer();
+setInterval(()=>{if(S.raceOn||$('raceArea').style.display!=='none') renderTrack();},400);
+</script>
+</body>
+</html>
