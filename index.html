@@ -3,390 +3,365 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>TypeRace — ALHACKER168</title>
+<title>TypeRace ALHACKER168 — Luxury Edition</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Rajdhani:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;700&family=Bebas+Neue&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
-  --g:#00FFCC;--g2:#00CCFF;--gold:#FFD700;--gold2:#FF9500;
-  --red:#FF3355;--purple:#BB66FF;
-  --bg:#04060F;--bg2:#070B18;--bg3:#0A1020;
-  --border:rgba(0,255,200,0.12);--border2:rgba(255,255,255,0.06);
-  --text:#D8E8F5;--muted:#4A607A;
-  --fd:'Orbitron',monospace;--fb:'Rajdhani',sans-serif;--fm:'Share Tech Mono',monospace;
+  --g:#C9A84C;--g2:#E8C96A;--gold:#FFD700;--gold2:#B8860B;
+  --cyan:#00E5FF;--cyan2:#0099CC;
+  --red:#FF2244;--purple:#9B59B6;
+  --bg:#050810;--bg2:#080D1A;--bg3:#0C1225;--bg4:#101830;
+  --border:rgba(201,168,76,0.15);--border2:rgba(255,255,255,0.06);
+  --text:#F0E8D8;--muted:#5A6A7A;--muted2:#8899AA;
+  --fd:'Cinzel',serif;--fb:'Rajdhani',sans-serif;--fm:'JetBrains Mono',monospace;--fbb:'Bebas Neue',sans-serif;
 }
-
 html{scroll-behavior:smooth}
 body{
   background:var(--bg);color:var(--text);font-family:var(--fb);
   min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased;
-  cursor:auto !important;
 }
-
-/* ── RAIN CANVAS ── */
-#rainCanvas{
-  position:fixed;inset:0;z-index:0;pointer-events:none;
-  width:100%;height:100%;
-}
-
-/* ── LIGHTNING ── */
-#lightningCanvas{
-  position:fixed;inset:0;z-index:1;pointer-events:none;
-  width:100%;height:100%;
-}
-
-/* ── BACKGROUND GRID ── */
-body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,255,200,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,200,0.015) 1px,transparent 1px);background-size:50px 50px;pointer-events:none;z-index:0;}
-
-.wrap{position:relative;z-index:2;max-width:1300px;margin:0 auto;padding:0 16px}
-
-/* ── HEADER ── */
-header{padding:18px 0 14px;border-bottom:1px solid var(--border);position:relative;z-index:2;}
-header::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--g),var(--gold),var(--g2),transparent);animation:hScan 4s ease-in-out infinite;}
-@keyframes hScan{0%,100%{opacity:.3}50%{opacity:1}}
-.hinner{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-.logo{display:flex;flex-direction:column;gap:3px}
-.logo-main{font-family:var(--fd);font-size:clamp(16px,3.5vw,28px);font-weight:900;letter-spacing:3px;line-height:1;background:linear-gradient(120deg,var(--g),var(--gold),var(--g2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 16px rgba(0,255,200,0.4));}
-.logo-sub{font-family:var(--fd);font-size:clamp(7px,1.2vw,9px);color:var(--gold);letter-spacing:5px;opacity:.7;text-transform:uppercase;}
-.hcontrols{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.lsel{background:var(--bg3);border:1px solid var(--border);color:var(--g);font-family:var(--fb);font-size:12px;padding:7px 12px;border-radius:6px;outline:none;transition:.3s;}
-.lsel option{background:#0A1020}
-.pbadge{display:flex;align-items:center;gap:7px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:5px 12px;}
-.pdot{width:7px;height:7px;border-radius:50%;background:var(--g);box-shadow:0 0 6px var(--g);animation:blink2 2s infinite}
-@keyframes blink2{0%,100%{opacity:1}50%{opacity:.3}}
-.pname{font-family:var(--fm);font-size:12px;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-
-/* ── BUTTONS ── */
-.btn{font-family:var(--fd);font-size:10px;font-weight:700;letter-spacing:2px;padding:9px 18px;border-radius:6px;border:none;transition:all .25s;text-transform:uppercase;position:relative;overflow:hidden;white-space:nowrap;cursor:pointer;}
-.btn::after{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);transition:left .4s;}
-.btn:hover::after{left:100%}
-.btn:disabled{opacity:.35;pointer-events:none}
-.btn:hover:not(:disabled){transform:translateY(-1px)}
-.btn-c{background:linear-gradient(135deg,#00BBBB,#007799);color:#fff;box-shadow:0 0 16px rgba(0,200,200,.25)}
-.btn-c:hover:not(:disabled){box-shadow:0 0 28px rgba(0,255,255,.5)}
-.btn-gold{background:linear-gradient(135deg,#FFD700,#FF7700);color:#000;box-shadow:0 0 16px rgba(255,200,0,.25)}
-.btn-gold:hover:not(:disabled){box-shadow:0 0 28px rgba(255,200,0,.5)}
-.btn-red{background:linear-gradient(135deg,#FF3355,#AA0033);color:#fff;box-shadow:0 0 16px rgba(255,50,80,.2)}
-.btn-red:hover:not(:disabled){box-shadow:0 0 28px rgba(255,50,80,.4)}
-.btn-ghost{background:transparent;color:var(--g);border:1px solid var(--g)}
-.btn-ghost:hover:not(:disabled){background:rgba(0,255,200,.08);box-shadow:0 0 12px rgba(0,255,200,.2)}
-
-/* ── MODALS ── */
-.overlay{position:fixed;inset:0;background:rgba(4,6,15,.96);z-index:1000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(12px);padding:16px;}
-.modal{background:var(--bg3);border:1px solid var(--border);border-radius:16px;padding:36px 32px;width:100%;max-width:480px;position:relative;box-shadow:0 0 60px rgba(0,200,255,.08);}
-.modal::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--g),var(--gold),var(--g2),transparent);border-radius:16px 16px 0 0;}
-.modal h2{font-family:var(--fd);font-size:20px;color:var(--gold);letter-spacing:3px;margin-bottom:6px}
-.modal p{color:var(--muted);font-size:13px;line-height:1.6;margin-bottom:20px}
-.igroup{margin-bottom:14px}
-.igroup label{display:block;font-size:10px;letter-spacing:2px;color:var(--g);margin-bottom:6px;text-transform:uppercase}
-.ifield{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border2);color:var(--text);font-family:var(--fm);font-size:15px;padding:11px 14px;border-radius:8px;outline:none;transition:.3s;}
-.ifield:focus{border-color:var(--g);box-shadow:0 0 14px rgba(0,255,200,.15);background:rgba(0,255,200,.03)}
-.ifield::placeholder{color:var(--muted)}
-.avpick{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
-.avopt{font-size:24px;padding:6px 8px;border-radius:8px;border:2px solid transparent;transition:.2s;background:rgba(255,255,255,.03);cursor:pointer;}
-.avopt:hover,.avopt.sel{border-color:var(--gold);background:rgba(255,215,0,.1)}
-
-/* ── MAIN ── */
-main{padding:20px 0;position:relative;z-index:2}
-.sfeed{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:16px;max-height:80px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
-.sitem{font-family:var(--fm);font-size:10px;color:var(--muted);padding:2px 0;line-height:1.5}
-.sitem .hl{color:var(--g)}.sitem .gd{color:var(--gold)}.sitem .rd{color:var(--red)}
-
-/* ── HOME ── */
-#homeSection{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
-@media(max-width:640px){#homeSection{grid-template-columns:1fr}}
-.rcard{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:22px;display:flex;flex-direction:column;gap:12px;}
-.rcard h3{font-family:var(--fd);font-size:12px;letter-spacing:3px;color:var(--gold);margin-bottom:2px}
-.rcard p{font-size:12px;color:var(--muted);line-height:1.5}
-
-/* ── RACE AREA ── */
-#raceArea{display:none}
-.race-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;}
-.stitle{font-family:var(--fd);font-size:clamp(13px,2vw,18px);color:var(--gold);letter-spacing:3px}
-.rinfo{font-family:var(--fm);font-size:11px;color:var(--muted);margin-top:3px}
-.race-btns{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.rstatus{font-family:var(--fd);font-size:10px;letter-spacing:3px;color:var(--muted);padding:6px 14px;border:1px solid var(--border2);border-radius:20px;transition:.3s}
-
-/* ── LOBBY ── */
-.lobby{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:16px;}
-.lhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px}
-.lhead-title{font-family:var(--fd);font-size:11px;letter-spacing:3px;color:var(--gold)}
-.code-badge{font-family:var(--fm);font-size:11px;color:var(--g);background:rgba(0,255,200,.07);border:1px solid rgba(0,255,200,.2);border-radius:6px;padding:4px 12px;transition:.2s;cursor:pointer;}
-.code-badge:hover{background:rgba(0,255,200,.14)}
-.plist{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px}
-.pcard{background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:10px;transition:.3s;}
-.pcard.ready{border-color:rgba(0,255,136,.4);box-shadow:0 0 8px rgba(0,255,136,.1)}
-.pcard.ishost{border-color:rgba(255,215,0,.3)}
-.pcard.isme{border-color:rgba(0,255,200,.4)}
-.pav{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
-.pinfo{flex:1;min-width:0}
-.pinfo-name{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.pinfo-status{font-size:9px;letter-spacing:1px;margin-top:2px}
-.s-ready{color:#00FF88}.s-wait{color:var(--muted)}.s-host{color:var(--gold)}
-
-/* ── RACE TRACK — TIME OF DAY ── */
-.track-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:16px;overflow:hidden;}
-.twrap-title{font-family:var(--fd);font-size:10px;letter-spacing:4px;color:var(--muted);margin-bottom:6px;display:flex;align-items:center;gap:12px;}
-.tod-label{font-size:9px;letter-spacing:2px;padding:3px 10px;border-radius:20px;border:1px solid rgba(255,255,255,.1);font-family:var(--fm);}
-
-/* Dynamic track based on time of day */
-.track{
-  position:relative;height:64px;margin:10px 0;
-  display:flex;align-items:center;
-  border-radius:12px;overflow:visible;
-}
-
-/* Sky / time-of-day background */
-.track-bg{
-  position:absolute;left:0;right:0;height:100%;border-radius:12px;overflow:hidden;
-}
-/* Asphalt road */
-.track-road{
-  position:absolute;left:0;right:0;bottom:0;height:70%;border-radius:0 0 12px 12px;
-}
-/* Road markings */
-.track-road::after{
-  content:'';position:absolute;top:45%;left:0;right:0;height:3px;
-  background:repeating-linear-gradient(90deg,transparent,transparent 18px,rgba(255,255,255,.15) 18px,rgba(255,255,255,.15) 30px);
-}
-/* Road edge lines */
-.track-road::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:2px;
-  background:rgba(255,200,0,.25);
-  box-shadow:0 0 4px rgba(255,200,0,.2);
-}
-
-/* MORNING track */
-.track.morning .track-bg{background:linear-gradient(180deg,#FF9966 0%,#FFB347 30%,#87CEEB 60%,#87CEEB 100%)}
-.track.morning .track-road{background:linear-gradient(180deg,#4a4a4a,#333333)}
-/* Sun */
-.track.morning .track-bg::before{content:'☀';position:absolute;right:15px;top:3px;font-size:18px;filter:drop-shadow(0 0 8px #FFD700);animation:sunBob 3s ease-in-out infinite;}
-@keyframes sunBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
-
-/* AFTERNOON track */
-.track.afternoon .track-bg{background:linear-gradient(180deg,#2980B9 0%,#5DADE2 40%,#85C1E9 100%)}
-.track.afternoon .track-road{background:linear-gradient(180deg,#555,#3a3a3a)}
-.track.afternoon .track-bg::before{content:'☀';position:absolute;top:4px;right:40px;font-size:16px;filter:drop-shadow(0 0 10px #FFF176);}
-
-/* SUNSET track */
-.track.sunset .track-bg{background:linear-gradient(180deg,#2C3E50 0%,#E74C3C 25%,#F39C12 55%,#8E44AD 100%)}
-.track.sunset .track-road{background:linear-gradient(180deg,#3d3d3d,#222)}
-.track.sunset .track-bg::before{content:'🌅';position:absolute;right:12px;top:2px;font-size:16px;}
-
-/* NIGHT track */
-.track.night .track-bg{background:linear-gradient(180deg,#020817 0%,#0a0e1f 50%,#0d1117 100%)}
-.track.night .track-road{background:linear-gradient(180deg,#1a1a2e,#0d0d0d)}
-/* Street lights glow */
-.track.night .track-bg::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 20% 0%,rgba(255,200,80,.05) 0%,transparent 40%),radial-gradient(ellipse at 60% 0%,rgba(255,200,80,.05) 0%,transparent 40%);}
-/* Stars */
-.track.night .track-bg::before{content:'✦ ✧ ✦ · ✧ · ✦';position:absolute;top:3px;left:12px;font-size:7px;color:rgba(255,255,255,.5);letter-spacing:6px;}
-
-/* Finish line */
-.tfinish{
-  position:absolute;right:0;top:0;bottom:0;width:8px;z-index:3;
-  background:repeating-linear-gradient(180deg,#fff 0,#fff 7px,#1a1a1a 7px,#1a1a1a 14px);
-  border-radius:0 12px 12px 0;
-  box-shadow:-3px 0 10px rgba(255,255,255,.35);
-}
-.tfinish::before{content:'🏁';position:absolute;top:-22px;left:50%;transform:translateX(-50%);font-size:15px;}
-
-/* Progress fill */
-.tfill{
-  position:absolute;left:0;height:100%;border-radius:12px;
-  transition:width .3s cubic-bezier(.4,0,.2,1);opacity:.12;
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -10%,rgba(201,168,76,0.07) 0%,transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 80%,rgba(0,229,255,0.03) 0%,transparent 50%),
+    linear-gradient(180deg,#050810 0%,#060C18 50%,#040710 100%);
   pointer-events:none;
 }
+body::after{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(rgba(201,168,76,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(201,168,76,0.015) 1px,transparent 1px);
+  background-size:60px 60px;
+}
+#rainCanvas,#lightCanvas{position:fixed;inset:0;z-index:1;pointer-events:none;width:100%;height:100%;}
+.wrap{position:relative;z-index:3;max-width:1300px;margin:0 auto;padding:0 20px}
 
-/* THE VEHICLE */
-.tcar{
-  position:absolute;font-size:28px;line-height:1;z-index:10;
-  transform:translateX(-50%);
-  transition:left .35s cubic-bezier(.34,1.56,.64,1);
-  user-select:none;will-change:left;
-  filter:drop-shadow(0 3px 6px rgba(0,0,0,.7));
-}
-.tcar.mine{
-  filter:drop-shadow(0 0 14px var(--gold)) drop-shadow(0 0 5px var(--gold)) drop-shadow(0 3px 6px rgba(0,0,0,.7));
-}
-.tcar.finished{
-  animation:celebrate .7s ease-in-out;
-}
-@keyframes celebrate{
-  0%,100%{transform:translateX(-50%) scale(1)}
-  25%{transform:translateX(-50%) scale(1.5) rotate(-12deg)}
-  50%{transform:translateX(-50%) scale(1.3) rotate(8deg)}
-  75%{transform:translateX(-50%) scale(1.4) rotate(-5deg)}
-}
+/* ═══ HEADER ═══ */
+header{padding:14px 0 12px;position:relative;z-index:3;border-bottom:1px solid rgba(201,168,76,0.18);}
+header::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--g),var(--gold),var(--g2),transparent);animation:hline 4s ease-in-out infinite;}
+@keyframes hline{0%,100%{opacity:.4}50%{opacity:1}}
+.hinner{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.logo-main{font-family:var(--fd);font-size:clamp(13px,2.2vw,20px);font-weight:900;letter-spacing:4px;line-height:1;background:linear-gradient(120deg,#C9A84C,#FFD700,#E8C96A,#C9A84C);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 20px rgba(201,168,76,0.5));background-size:200%;animation:shimmer 3s linear infinite;}
+@keyframes shimmer{0%{background-position:0%}100%{background-position:200%}}
+.logo-sub{font-family:var(--fm);font-size:9px;color:var(--g);letter-spacing:4px;opacity:.6;margin-top:2px}
+.hcontrols{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.lsel{background:var(--bg3);border:1px solid var(--border);color:var(--g2);font-family:var(--fb);font-size:12px;padding:6px 10px;border-radius:6px;outline:none;}
+.lsel option{background:#0C1225}
+.pbadge{display:flex;align-items:center;gap:6px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:5px 12px;}
+.pdot{width:6px;height:6px;border-radius:50%;background:var(--gold);box-shadow:0 0 6px var(--gold);animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.pname{font-family:var(--fm);font-size:11px;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-/* ── EXHAUST SMOKE PARTICLES ── */
-.smoke{
-  position:absolute;border-radius:50%;pointer-events:none;z-index:8;
-  animation:smokeFade 1.2s ease-out forwards;
-}
-@keyframes smokeFade{
-  0%{opacity:.85;transform:translate(0,0) scale(1)}
-  40%{opacity:.5;transform:translate(-18px,-12px) scale(2.2)}
-  100%{opacity:0;transform:translate(-40px,-30px) scale(4)}
-}
-.spark{
-  position:absolute;pointer-events:none;z-index:8;
-  animation:sparkFly .6s ease-out forwards;
-}
-@keyframes sparkFly{
-  0%{opacity:1;transform:translate(0,0) scale(1)}
-  100%{opacity:0;transform:translate(var(--sx),var(--sy)) scale(0.2)}
-}
-.speedline{
-  position:absolute;height:2px;border-radius:1px;pointer-events:none;z-index:7;
-  animation:speedFade .45s ease-out forwards;transform-origin:right center;
-}
-@keyframes speedFade{
-  0%{opacity:.7;transform:scaleX(1)}
-  100%{opacity:0;transform:scaleX(0)}
-}
+/* ═══ BUTTONS ═══ */
+.btn{font-family:var(--fd);font-size:9px;font-weight:700;letter-spacing:2px;padding:9px 18px;border-radius:6px;border:none;transition:all .25s;text-transform:uppercase;position:relative;overflow:hidden;cursor:pointer;white-space:nowrap;}
+.btn::after{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.1),transparent);transition:left .4s;}
+.btn:hover::after{left:100%}
+.btn:disabled{opacity:.3;pointer-events:none}
+.btn:hover:not(:disabled){transform:translateY(-1px)}
+.btn-gold{background:linear-gradient(135deg,#B8860B,#FFD700,#B8860B);background-size:200%;color:#030610;box-shadow:0 0 16px rgba(255,215,0,.2);font-weight:900;}
+.btn-gold:hover:not(:disabled){background-position:right;box-shadow:0 4px 28px rgba(255,215,0,.5)}
+.btn-c{background:linear-gradient(135deg,#006688,#00E5FF,#006688);background-size:200%;color:#030610;box-shadow:0 0 14px rgba(0,229,255,.2);}
+.btn-c:hover:not(:disabled){background-position:right;box-shadow:0 4px 24px rgba(0,229,255,.4)}
+.btn-red{background:linear-gradient(135deg,#880022,#FF2244,#880022);background-size:200%;color:#fff;box-shadow:0 0 14px rgba(255,34,68,.2);}
+.btn-red:hover:not(:disabled){background-position:right;box-shadow:0 4px 22px rgba(255,34,68,.4)}
+.btn-ghost{background:transparent;color:var(--g2);border:1px solid var(--border);}
+.btn-ghost:hover:not(:disabled){background:rgba(201,168,76,.08);border-color:var(--g);box-shadow:0 0 12px rgba(201,168,76,.15)}
 
-/* Player info inside track */
-.tpinfo{
-  position:absolute;right:14px;top:50%;transform:translateY(-50%);
-  z-index:12;background:rgba(4,6,15,.9);padding:4px 11px;border-radius:20px;
-  border:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:7px;
+/* ═══ MODAL ═══ */
+.overlay{position:fixed;inset:0;background:rgba(5,8,16,.97);z-index:1000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(16px);padding:16px;}
+.modal{background:linear-gradient(145deg,#0C1225,#080D1A);border:1px solid rgba(201,168,76,0.25);border-radius:20px;padding:38px 34px;width:100%;max-width:500px;position:relative;box-shadow:0 0 80px rgba(201,168,76,.07),inset 0 1px 0 rgba(255,215,0,.08);}
+.modal::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--g),var(--gold),var(--g2),transparent);border-radius:20px 20px 0 0;}
+.modal h2{font-family:var(--fd);font-size:20px;color:var(--gold);letter-spacing:3px;margin-bottom:6px}
+.modal p{color:var(--muted2);font-size:13px;line-height:1.7;margin-bottom:20px}
+.igroup{margin-bottom:14px}
+.igroup label{display:block;font-family:var(--fm);font-size:10px;letter-spacing:3px;color:var(--g);margin-bottom:6px;text-transform:uppercase}
+.ifield{width:100%;background:rgba(255,255,255,.03);border:1px solid rgba(201,168,76,.15);color:var(--text);font-family:var(--fm);font-size:14px;padding:11px 14px;border-radius:8px;outline:none;transition:.3s;}
+.ifield:focus{border-color:var(--g);box-shadow:0 0 16px rgba(201,168,76,.12);background:rgba(201,168,76,.02)}
+.ifield::placeholder{color:var(--muted)}
+.car-grid{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}
+.car-opt{padding:6px 8px;border-radius:8px;border:2px solid transparent;transition:.2s;background:rgba(255,255,255,.03);cursor:pointer;font-size:22px;}
+.car-opt:hover,.car-opt.sel{border-color:var(--gold);background:rgba(255,215,0,.08);box-shadow:0 0 10px rgba(255,215,0,.2)}
+
+/* ═══ FEED ═══ */
+.sfeed{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;margin-bottom:14px;max-height:60px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
+.sitem{font-family:var(--fm);font-size:9px;color:var(--muted);padding:1px 0;line-height:1.5}
+.sitem .hl{color:var(--g2)}.sitem .gd{color:var(--gold)}.sitem .rd{color:var(--red)}
+
+/* ═══ NAV TABS ═══ */
+.main-nav{display:flex;gap:4px;margin-bottom:16px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:4px;}
+.nav-tab{flex:1;padding:10px 14px;border-radius:7px;border:none;background:transparent;font-family:var(--fd);font-size:9px;letter-spacing:2px;color:var(--muted2);cursor:pointer;transition:all .3s;text-transform:uppercase;}
+.nav-tab.active{background:linear-gradient(135deg,rgba(201,168,76,.15),rgba(255,215,0,.07));color:var(--gold);border:1px solid rgba(201,168,76,.22);box-shadow:0 0 14px rgba(201,168,76,.08);}
+.nav-tab:hover:not(.active){color:var(--text);background:rgba(255,255,255,.03)}
+
+/* ═══ HOME CARDS ═══ */
+.home-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
+@media(max-width:600px){.home-grid{grid-template-columns:1fr}}
+.card{background:linear-gradient(145deg,var(--bg3),var(--bg2));border:1px solid var(--border);border-radius:14px;padding:24px;position:relative;overflow:hidden;box-shadow:0 4px 30px rgba(0,0,0,.4),inset 0 1px 0 rgba(201,168,76,.06);transition:transform .3s,box-shadow .3s;}
+.card:hover{transform:translateY(-2px);box-shadow:0 8px 40px rgba(201,168,76,.08)}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--g),transparent);}
+.card h3{font-family:var(--fd);font-size:12px;letter-spacing:3px;color:var(--gold);margin-bottom:8px}
+.card p{font-size:12px;color:var(--muted2);line-height:1.6;margin-bottom:14px}
+.card.solo-card::before{background:linear-gradient(90deg,transparent,var(--cyan),transparent);}
+.card.solo-card h3{color:var(--cyan);}
+
+/* ═══ TYPING WINDOW — KEY: 2-ROW SCROLLING ═══ */
+/*
+  The text display shows exactly 2 rows of words at a time.
+  Words slide left as user types — always keeping current word centered/visible.
+  No long wall of text. Clean, readable, like the reference image.
+*/
+.typing-window{
+  background:rgba(255,255,255,.05);
+  border:2px solid rgba(201,168,76,.25);
+  border-radius:14px;
+  padding:22px 24px 14px;
+  margin-bottom:14px;
+  position:relative;
+  transition:border-color .3s,box-shadow .3s;
+  overflow:hidden;
 }
-.tpname{font-family:var(--fm);font-size:10px;max-width:70px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.twpm{font-family:var(--fd);font-size:10px;color:var(--gold);font-weight:700}
-.tprog{font-family:var(--fd);font-size:9px;color:var(--muted)}
+.typing-window.active-gold{border-color:rgba(201,168,76,.6);box-shadow:0 0 28px rgba(201,168,76,.1);}
+.typing-window.active-cyan{border-color:rgba(0,229,255,.5);box-shadow:0 0 28px rgba(0,229,255,.08);}
+.typing-window.err{border-color:var(--red) !important;animation:shake .2s;box-shadow:0 0 20px rgba(255,34,68,.2) !important;}
+@keyframes shake{0%,100%{transform:translateX(0)}30%{transform:translateX(-4px)}70%{transform:translateX(4px)}}
 
-/* ── STATS ── */
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
-@media(max-width:500px){.stats{grid-template-columns:repeat(2,1fr)}}
-.stat{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;text-align:center;position:relative;overflow:hidden;}
-.stat::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
-.stat.wpm::before{background:linear-gradient(90deg,var(--g),var(--g2))}
-.stat.acc::before{background:linear-gradient(90deg,var(--gold),var(--gold2))}
-.stat.tim::before{background:linear-gradient(90deg,var(--red),#FF6644)}
-.stat.pos::before{background:linear-gradient(90deg,var(--purple),#6633CC)}
-.stat-v{font-family:var(--fd);font-size:clamp(20px,3.5vw,30px);font-weight:900;line-height:1;margin-bottom:3px}
-.stat.wpm .stat-v{color:var(--g);text-shadow:0 0 16px rgba(0,255,200,.4)}
-.stat.acc .stat-v{color:var(--gold);text-shadow:0 0 16px rgba(255,215,0,.4)}
-.stat.tim .stat-v{color:var(--red);text-shadow:0 0 16px rgba(255,50,80,.4)}
-.stat.pos .stat-v{color:var(--purple);text-shadow:0 0 16px rgba(187,102,255,.4)}
-.stat-l{font-size:9px;letter-spacing:3px;color:var(--muted);text-transform:uppercase}
-.pbar-wrap{height:4px;background:rgba(255,255,255,.04);border-radius:2px;margin-bottom:12px;overflow:hidden}
-.pbar{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--g),var(--g2));box-shadow:0 0 8px var(--g);transition:width .3s}
-
-/* ── TYPING SECTION ── */
-.typing-sec{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:16px;transition:.3s;}
-.typing-sec.active{border-color:rgba(0,255,200,.4);box-shadow:0 0 24px rgba(0,255,200,.07)}
-.typing-sec.err{border-color:var(--red);animation:shake .25s ease;box-shadow:0 0 24px rgba(255,50,80,.15)}
-@keyframes shake{0%,100%{transform:translateX(0)}30%{transform:translateX(-5px)}70%{transform:translateX(5px)}}
-
-.tdisplay{
-  font-family:var(--fm);font-size:clamp(14px,1.8vw,18px);
-  line-height:2.1;margin-bottom:16px;min-height:60px;
-  word-break:break-word;letter-spacing:.3px;
-  text-shadow:0 0 1px rgba(255,255,255,.05);
+/* Word display — 2 rows max, overflow hidden */
+.word-display{
+  height: 74px;           /* exactly 2 rows at font-size 22px with lineheight 1.6 */
+  overflow: hidden;
+  position: relative;
+  margin-bottom: 14px;
 }
-.word{display:inline-block;margin-right:.4em;border-radius:4px;padding:0 2px;transition:all .15s;position:relative;}
-.word.done{color:#00FF88;text-shadow:0 0 4px rgba(0,255,136,.3);}
-.word.wrong{color:var(--red);background:rgba(255,50,80,.1);text-decoration:underline wavy var(--red)}
-.word.active{color:var(--gold);background:rgba(255,215,0,.08);box-shadow:0 0 0 1px rgba(255,215,0,.25);}
-.word.pending{color:var(--muted)}
-.ch{border-radius:1px;transition:color .04s}
-.ch.ok{color:#00FF88;text-shadow:0 0 3px rgba(0,255,136,.4);}
-.ch.bad{color:var(--red);background:rgba(255,50,80,.15)}
-.ch.cur{color:var(--gold);border-bottom:2px solid var(--gold);animation:blink3 .7s infinite;}
-@keyframes blink3{0%,100%{border-color:var(--gold)}50%{border-color:transparent}}
-.ch.un{color:rgba(255,215,0,.5)}
-
-.tinput{
-  width:100%;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);
-  color:var(--text);font-family:var(--fm);font-size:15px;
-  padding:12px 16px;border-radius:9px;outline:none;resize:none;transition:.3s;height:54px;
-  cursor:text !important;
+.word-row{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  line-height: 1;
+  transition: margin-top .25s cubic-bezier(.4,0,.2,1);
 }
-.tinput:focus{border-color:var(--g);box-shadow:0 0 16px rgba(0,255,200,.12);background:rgba(0,255,200,.025)}
-.tinput:disabled{opacity:.35}
+/* Each word */
+.wd{
+  font-family: var(--fm);
+  font-size: 22px;
+  font-weight: 400;
+  margin-right: 14px;
+  margin-bottom: 8px;
+  border-radius: 4px;
+  padding: 0 3px;
+  display: inline-block;
+  transition: color .08s;
+  white-space: nowrap;
+  user-select: none;
+}
+.wd.done   { color: #4FFFB0; text-shadow: 0 0 6px rgba(79,255,176,.4); }
+.wd.wrong  { color: #FF5577; text-shadow: 0 0 4px rgba(255,50,80,.3); text-decoration: underline wavy #FF2244; }
+.wd.active { color: #FFFFFF; }
+.wd.pending{ color: rgba(240,232,216,0.35); }
 
-/* ── COUNTDOWN ── */
-#cdOverlay{position:fixed;inset:0;background:rgba(4,6,15,.94);z-index:900;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;backdrop-filter:blur(8px);}
+/* Character-level coloring inside active word */
+.ch-ok  { color: #4FFFB0; text-shadow: 0 0 5px rgba(79,255,176,.5); }
+.ch-bad { color: #FF3355; background: rgba(255,34,68,.15); border-radius: 2px; }
+.ch-cur { color: #FFFFFF; border-bottom: 2px solid #FFD700; animation: cur .65s infinite; }
+.ch-un  { color: rgba(255,255,255,.28); }
+@keyframes cur{0%,100%{border-color:#FFD700}50%{border-color:transparent}}
+
+/* Fade edges */
+.word-display::before,
+.word-display::after{
+  content:'';position:absolute;top:0;bottom:0;width:32px;z-index:2;pointer-events:none;
+}
+.word-display::before{left:0;background:linear-gradient(90deg,rgba(8,13,26,1),transparent);}
+.word-display::after{right:0;background:linear-gradient(270deg,rgba(8,13,26,1),transparent);}
+
+/* Input */
+.type-input{
+  width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);
+  color:#FFFFFF;font-family:var(--fm);font-size:16px;
+  padding:12px 16px;border-radius:9px;outline:none;transition:.3s;
+  letter-spacing:.5px;
+}
+.type-input:focus{border-color:var(--g);box-shadow:0 0 16px rgba(201,168,76,.1);background:rgba(201,168,76,.02)}
+.type-input.cyan-focus:focus{border-color:var(--cyan);box-shadow:0 0 16px rgba(0,229,255,.1);background:rgba(0,229,255,.02)}
+.type-input:disabled{opacity:.3;cursor:not-allowed}
+.type-input::placeholder{color:rgba(90,106,122,.8)}
+
+/* ═══ TIMER RING ═══ */
+.timer-wrap{display:flex;flex-direction:column;align-items:center;margin-bottom:16px;}
+.timer-ring-outer{position:relative;width:120px;height:120px;}
+.timer-ring-outer svg{transform:rotate(-90deg)}
+.tring-bg{stroke:rgba(255,255,255,.05);fill:none}
+.tring-fill{fill:none;stroke-linecap:round;transition:stroke-dashoffset .4s linear;stroke:var(--cyan);}
+.timer-num{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:var(--fbb);font-size:36px;letter-spacing:2px;transition:color .3s;}
+.timer-lbl{font-family:var(--fm);font-size:8px;letter-spacing:3px;color:var(--muted);margin-top:6px;}
+.t-normal{color:var(--cyan);text-shadow:0 0 16px rgba(0,229,255,.6);}
+.t-warn  {color:var(--gold);text-shadow:0 0 16px rgba(255,215,0,.7);}
+.t-danger{color:var(--red);text-shadow:0 0 16px rgba(255,34,68,.7);animation:tdanger .4s infinite;}
+@keyframes tdanger{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.1)}}
+
+/* ═══ STATS ROW ═══ */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+@media(max-width:480px){.stats-row{grid-template-columns:repeat(2,1fr)}}
+.stat-box{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px;text-align:center;position:relative;overflow:hidden;}
+.stat-box::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.sb-wpm::before{background:linear-gradient(90deg,var(--cyan),var(--cyan2))}
+.sb-acc::before{background:linear-gradient(90deg,var(--gold),var(--gold2))}
+.sb-kpm::before{background:linear-gradient(90deg,var(--purple),#6633CC)}
+.sb-str::before{background:linear-gradient(90deg,var(--red),#FF6644)}
+.stat-v{font-family:var(--fbb);font-size:clamp(20px,3vw,30px);line-height:1;margin-bottom:2px;letter-spacing:1px;}
+.sb-wpm .stat-v{color:var(--cyan);text-shadow:0 0 12px rgba(0,229,255,.4)}
+.sb-acc .stat-v{color:var(--gold);text-shadow:0 0 12px rgba(255,215,0,.4)}
+.sb-kpm .stat-v{color:var(--purple);text-shadow:0 0 12px rgba(155,89,182,.4)}
+.sb-str .stat-v{color:var(--red);text-shadow:0 0 12px rgba(255,34,68,.4)}
+.stat-l{font-family:var(--fm);font-size:8px;letter-spacing:3px;color:var(--muted)}
+.prog-bar-wrap{height:4px;background:rgba(255,255,255,.04);border-radius:2px;margin-bottom:14px;overflow:hidden;}
+.prog-bar{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--cyan),var(--g2));box-shadow:0 0 8px var(--cyan);transition:width .3s;width:0%;}
+
+/* Race specific */
+.race-stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+@media(max-width:480px){.race-stats-row{grid-template-columns:repeat(2,1fr)}}
+.rsb-wpm::before{background:linear-gradient(90deg,var(--g),var(--g2))}
+.rsb-wpm .stat-v{color:var(--g2);text-shadow:0 0 12px rgba(201,168,76,.4)}
+
+/* ═══ SOLO RESULT ═══ */
+.solo-result{background:linear-gradient(145deg,var(--bg3),var(--bg2));border:1px solid rgba(0,229,255,.2);border-radius:14px;padding:28px;margin-bottom:14px;display:none;animation:fadeUp .5s ease;}
+.solo-result.show{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.res-wpm-big{font-family:var(--fbb);font-size:64px;text-align:center;color:var(--cyan);letter-spacing:4px;line-height:1;text-shadow:0 0 28px rgba(0,229,255,.5);}
+.res-label{font-family:var(--fm);font-size:10px;letter-spacing:5px;color:var(--muted);text-align:center;margin-bottom:16px;}
+.res-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
+@media(max-width:380px){.res-grid{grid-template-columns:1fr 1fr}}
+.res-item{background:rgba(255,255,255,.03);border:1px solid var(--border2);border-radius:8px;padding:12px;text-align:center}
+.res-v{font-family:var(--fbb);font-size:24px;color:var(--gold);letter-spacing:1px;}
+.res-l{font-family:var(--fm);font-size:8px;letter-spacing:2px;color:var(--muted);margin-top:2px;}
+.rating-stars{display:flex;justify-content:center;gap:4px;margin-bottom:14px;font-size:22px;animation:starPop .8s ease .2s both;}
+@keyframes starPop{from{opacity:0;transform:scale(.5)}to{opacity:1;transform:scale(1)}}
+.res-crown{text-align:center;font-size:42px;margin-bottom:8px;animation:crownBounce .6s ease;}
+@keyframes crownBounce{0%{transform:scale(0)}60%{transform:scale(1.2)}100%{transform:scale(1)}}
+
+/* WPM Graph */
+.wpm-graph-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:14px;}
+.wpm-graph-title{font-family:var(--fm);font-size:8px;letter-spacing:3px;color:var(--muted);margin-bottom:8px}
+.wpm-bars{height:44px;display:flex;align-items:flex-end;gap:3px;padding:0 2px;}
+.wpm-bar{flex:1;border-radius:3px 3px 0 0;background:linear-gradient(180deg,var(--cyan),rgba(0,229,255,.25));min-height:3px;transition:height .3s;}
+
+/* ═══ RACE TRACK ═══ */
+.track-section{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:14px;overflow:hidden;}
+.track-section-hd{font-family:var(--fd);font-size:9px;letter-spacing:4px;color:var(--muted2);margin-bottom:4px;display:flex;align-items:center;justify-content:space-between;}
+.tod-badge{font-family:var(--fm);font-size:9px;letter-spacing:2px;padding:2px 10px;border-radius:20px;border:1px solid rgba(255,255,255,.1);}
+#trackList{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+
+/* Track row */
+.track-row{position:relative;border-radius:12px;overflow:hidden;height:72px;box-shadow:0 4px 16px rgba(0,0,0,.5);}
+.sky-morning{background:linear-gradient(180deg,#FF7043 0%,#FFB300 35%,#64B5F6 65%,#64B5F6 100%)}
+.sky-afternoon{background:linear-gradient(180deg,#1565C0 0%,#1976D2 40%,#42A5F5 100%)}
+.sky-sunset{background:linear-gradient(180deg,#0D47A1 0%,#7B1FA2 25%,#E64A19 55%,#F57F17 80%)}
+.sky-night{background:linear-gradient(180deg,#010409 0%,#020810 40%,#030C1A 100%)}
+.road-layer{position:absolute;bottom:0;left:0;right:0;height:55%;border-radius:0 0 12px 12px;}
+.road-day{background:linear-gradient(180deg,#455A64,#37474F,#263238)}
+.road-night{background:linear-gradient(180deg,#1C2A3A,#111822,#0A0F18)}
+.road-layer::after{content:'';position:absolute;top:42%;left:0;right:0;height:2px;background:repeating-linear-gradient(90deg,transparent,transparent 20px,rgba(255,255,255,.15) 20px,rgba(255,255,255,.15) 34px);}
+.road-layer::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:rgba(255,230,0,.25);}
+.finish-line{position:absolute;right:0;top:0;bottom:0;width:8px;z-index:5;background:repeating-linear-gradient(180deg,#fff 0,#fff 7px,#000 7px,#000 14px);border-radius:0 12px 12px 0;box-shadow:-3px 0 10px rgba(255,255,255,.3);}
+.finish-flag{position:absolute;top:-16px;right:1px;font-size:12px;z-index:6;}
+.deco-sun{position:absolute;right:18px;top:3px;font-size:14px;animation:sfloat 3s ease-in-out infinite;filter:drop-shadow(0 0 6px rgba(255,200,0,.8));}
+@keyframes sfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
+.deco-stars{position:absolute;top:3px;left:10px;font-size:7px;color:rgba(255,255,255,.5);letter-spacing:7px;animation:twinkle 2s infinite;}
+@keyframes twinkle{0%,100%{opacity:.5}50%{opacity:1}}
+.deco-moon{position:absolute;right:14px;top:3px;font-size:12px;filter:drop-shadow(0 0 7px rgba(200,220,255,.8));}
+.track-fill{position:absolute;left:0;top:0;height:100%;border-radius:12px;opacity:.1;pointer-events:none;transition:width .35s cubic-bezier(.4,0,.2,1);}
+
+/* 3D Car */
+.car-wrap{position:absolute;top:52%;z-index:20;transform:translate(-50%,-50%);transition:left .4s cubic-bezier(.34,1.4,.64,1);will-change:left;}
+.car-wrap.mine{filter:drop-shadow(0 0 12px var(--gold));}
+.car-body{font-size:28px;line-height:1;display:block;transform:perspective(180px) rotateY(-12deg) rotateX(7deg) scaleX(1.04);animation:carBob 1.8s ease-in-out infinite;}
+@keyframes carBob{0%,100%{transform:perspective(180px) rotateY(-12deg) rotateX(7deg) scaleX(1.04) translateY(0)}50%{transform:perspective(180px) rotateY(-12deg) rotateX(7deg) scaleX(1.04) translateY(-2px)}}
+.car-wrap.boosting .car-body{animation:none;transform:perspective(180px) rotateY(-15deg) rotateX(5deg) scaleX(1.08) translateY(-2px);}
+.car-wrap.finished .car-body{animation:finCel .8s ease;}
+@keyframes finCel{0%{transform:perspective(180px) rotateY(-12deg) rotateX(7deg) scale(1)}30%{transform:perspective(180px) rotateY(-24deg) rotateX(10deg) scale(1.4) translateY(-7px)}60%{transform:perspective(180px) rotateY(4deg) rotateX(5deg) scale(1.25) translateY(-4px)}100%{transform:perspective(180px) rotateY(-12deg) rotateX(7deg) scale(1)}}
+.car-shadow{position:absolute;bottom:-7px;left:50%;transform:translateX(-50%);width:34px;height:7px;border-radius:50%;background:radial-gradient(ellipse,rgba(0,0,0,.65) 0%,transparent 70%);animation:shadowP 1.8s ease-in-out infinite;}
+@keyframes shadowP{0%,100%{transform:translateX(-50%) scaleX(1)}50%{transform:translateX(-50%) scaleX(.85)}}
+.headlight{position:absolute;left:100%;top:38%;width:35px;height:10px;background:linear-gradient(90deg,rgba(255,252,200,.7),transparent);border-radius:0 50% 50% 0;pointer-events:none;}
+.brake-light{position:absolute;right:calc(100% - 4px);top:42%;width:5px;height:9px;background:transparent;border-radius:2px;pointer-events:none;transition:all .1s;}
+.brake-light.on{background:rgba(255,20,20,.95);box-shadow:0 0 8px rgba(255,0,0,.9);}
+.exhaust{position:absolute;border-radius:50%;pointer-events:none;animation:exh 1s ease-out forwards;}
+@keyframes exh{0%{opacity:.7;transform:translate(0,0) scale(1)}50%{opacity:.35;transform:translate(-20px,-7px) scale(2.4)}100%{opacity:0;transform:translate(-42px,-18px) scale(5)}}
+.spark-p{position:absolute;width:3px;height:3px;border-radius:50%;pointer-events:none;animation:spk .5s ease-out forwards;}
+@keyframes spk{0%{opacity:1;transform:translate(0,0)}100%{opacity:0;transform:translate(var(--sx),var(--sy))}}
+.sline{position:absolute;height:1.5px;border-radius:1px;pointer-events:none;animation:sl .38s ease-out forwards;transform-origin:right;}
+@keyframes sl{0%{opacity:.6;transform:scaleX(1)}100%{opacity:0;transform:scaleX(0)}}
+.player-label{position:absolute;left:10px;top:50%;transform:translateY(-50%);z-index:10;background:rgba(4,6,15,.88);padding:4px 10px;border-radius:16px;border:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:7px;backdrop-filter:blur(4px);}
+.pl-name{font-family:var(--fm);font-size:9px;max-width:65px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pl-wpm{font-family:var(--fbb);font-size:11px;color:var(--gold);letter-spacing:1px}
+.pl-pct{font-family:var(--fm);font-size:8px;color:var(--muted)}
+
+/* ═══ LOBBY ═══ */
+.lobby{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:18px;margin-bottom:14px;}
+.lhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;}
+.lhead-title{font-family:var(--fd);font-size:9px;letter-spacing:4px;color:var(--gold)}
+.code-badge{font-family:var(--fm);font-size:10px;color:var(--g2);background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.2);border-radius:6px;padding:4px 12px;cursor:pointer;transition:.2s;}
+.code-badge:hover{background:rgba(201,168,76,.12)}
+.plist{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:6px}
+.pcard{background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:9px 12px;display:flex;align-items:center;gap:8px;transition:.3s;}
+.pcard.ready{border-color:rgba(79,255,176,.3)}.pcard.ishost{border-color:rgba(255,215,0,.25)}.pcard.isme{border-color:rgba(201,168,76,.35)}
+.pav{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px;}
+.pinfo-name{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pinfo-status{font-family:var(--fm);font-size:8px;letter-spacing:1px;margin-top:1px;}
+.s-ready{color:#4FFFB0}.s-wait{color:var(--muted)}.s-host{color:var(--gold)}
+.slist{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.stag{background:rgba(155,89,182,.07);border:1px solid rgba(155,89,182,.18);border-radius:16px;padding:2px 8px;font-family:var(--fm);font-size:9px;color:var(--purple)}
+
+/* ═══ RACE HEADER ═══ */
+.race-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px;}
+.rtitle{font-family:var(--fd);font-size:clamp(13px,2vw,18px);color:var(--gold);letter-spacing:4px}
+.rinfo{font-family:var(--fm);font-size:9px;color:var(--muted);margin-top:3px;letter-spacing:1px;}
+.race-btns{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.rstatus{font-family:var(--fd);font-size:8px;letter-spacing:3px;color:var(--muted);padding:6px 14px;border:1px solid var(--border2);border-radius:20px;transition:.3s}
+.spec-bar{background:linear-gradient(135deg,rgba(155,89,182,.1),rgba(80,0,160,.08));border:1px solid rgba(155,89,182,.22);border-radius:8px;padding:9px 16px;text-align:center;margin-bottom:12px;font-family:var(--fd);font-size:9px;letter-spacing:3px;color:var(--purple);display:none;}
+.spec-bar.show{display:block}
+
+/* ═══ COUNTDOWN ═══ */
+#cdOverlay{position:fixed;inset:0;background:rgba(5,8,16,.97);z-index:900;display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;backdrop-filter:blur(12px);}
 #cdOverlay.show{display:flex}
-.cdn{font-family:var(--fd);font-size:clamp(80px,18vw,160px);font-weight:900;color:var(--gold);line-height:1;text-shadow:0 0 50px rgba(255,215,0,.7),0 0 100px rgba(255,215,0,.3);animation:pop .9s cubic-bezier(.175,.885,.32,1.275);}
-@keyframes pop{0%{transform:scale(2.2);opacity:0}60%{transform:scale(.92)}100%{transform:scale(1);opacity:1}}
-.cdl{font-family:var(--fd);font-size:12px;letter-spacing:8px;color:var(--g)}
+.cdn{font-family:var(--fbb);font-size:clamp(100px,20vw,180px);color:var(--gold);line-height:1;text-shadow:0 0 60px rgba(255,215,0,.8),0 0 120px rgba(255,215,0,.25);animation:cdPop .9s cubic-bezier(.175,.885,.32,1.275);}
+@keyframes cdPop{0%{transform:scale(2.5);opacity:0}60%{transform:scale(.9)}100%{transform:scale(1);opacity:1}}
+.cdl{font-family:var(--fd);font-size:11px;letter-spacing:7px;color:var(--g2)}
 
-/* ── RESULT ── */
-.rgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:18px 0}
-@media(max-width:400px){.rgrid{grid-template-columns:1fr}}
-.rstat{background:rgba(255,255,255,.03);border:1px solid var(--border2);border-radius:10px;padding:12px;text-align:center}
-.rstat-v{font-family:var(--fd);font-size:26px;font-weight:900;color:var(--gold)}
-.rstat-l{font-size:9px;letter-spacing:2px;color:var(--muted);margin-top:3px}
-.gline{height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin:14px 0}
-.lbitem{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;margin-bottom:6px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.04);}
-.lbitem.r1{background:rgba(255,215,0,.07);border-color:rgba(255,215,0,.3)}
-.lbitem.r2{background:rgba(192,192,192,.07);border-color:rgba(192,192,192,.2)}
-.lbitem.r3{background:rgba(205,127,50,.07);border-color:rgba(205,127,50,.2)}
-.lbrank{font-family:var(--fd);font-size:15px;font-weight:900;width:28px;text-align:center}
+/* ═══ RESULT MODAL ═══ */
+.rgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0}
+.rstat-modal{background:rgba(255,255,255,.03);border:1px solid var(--border2);border-radius:8px;padding:12px;text-align:center}
+.rstat-modal-v{font-family:var(--fbb);font-size:26px;color:var(--gold);letter-spacing:1px}
+.rstat-modal-l{font-family:var(--fm);font-size:8px;letter-spacing:2px;color:var(--muted);margin-top:2px}
+.gline{height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin:12px 0}
+.lbitem{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;margin-bottom:5px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.04);}
+.lbitem.r1{background:rgba(255,215,0,.06);border-color:rgba(255,215,0,.25)}.lbitem.r2{background:rgba(192,192,192,.05);border-color:rgba(192,192,192,.18)}.lbitem.r3{background:rgba(205,127,50,.05);border-color:rgba(205,127,50,.18)}
+.lbrank{font-family:var(--fbb);font-size:15px;width:24px;text-align:center}
 .r1 .lbrank{color:var(--gold)}.r2 .lbrank{color:#C0C0C0}.r3 .lbrank{color:#CD7F32}
 .lbname{flex:1;font-size:12px;font-weight:600}
-.lbwpm{font-family:var(--fd);font-size:14px;color:var(--gold);font-weight:700}
+.lbwpm{font-family:var(--fbb);font-size:14px;color:var(--gold)}
 
-/* ── SPECTATOR ── */
-.spec-bar{background:linear-gradient(135deg,rgba(153,63,255,.1),rgba(68,0,153,.1));border:1px solid rgba(153,63,255,.25);border-radius:9px;padding:10px 18px;text-align:center;margin-bottom:14px;font-family:var(--fd);font-size:10px;letter-spacing:3px;color:var(--purple);display:none;}
-.spec-bar.show{display:block}
-.slist{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
-.stag{background:rgba(153,63,255,.08);border:1px solid rgba(153,63,255,.18);border-radius:20px;padding:3px 10px;font-size:10px;color:var(--purple)}
+/* ═══ CONN ═══ */
+.conn-dot{width:5px;height:5px;border-radius:50%;display:inline-block;margin-right:4px;}
+.conn-dot.ok{background:#4FFFB0;box-shadow:0 0 5px #4FFFB0}.conn-dot.bad{background:var(--red);box-shadow:0 0 5px var(--red)}.conn-dot.mid{background:var(--gold);box-shadow:0 0 5px var(--gold);animation:blink 1s infinite}
 
-/* ── TOAST ── */
-#toast-c{position:fixed;top:16px;right:16px;z-index:2000;display:flex;flex-direction:column;gap:8px;pointer-events:none}
-.toast{background:var(--bg3);border-radius:9px;padding:11px 16px;border-left:3px solid var(--g);font-size:12px;max-width:280px;animation:tIn .25s ease;box-shadow:0 4px 24px rgba(0,0,0,.5);}
-.toast.ok{border-color:#00FF88}.toast.er{border-color:var(--red)}.toast.gd{border-color:var(--gold)}
+/* ═══ TOAST ═══ */
+#toast-c{position:fixed;top:16px;right:16px;z-index:2000;display:flex;flex-direction:column;gap:6px;pointer-events:none}
+.toast{background:var(--bg3);border-radius:8px;padding:10px 16px;border-left:3px solid var(--g);font-family:var(--fm);font-size:11px;max-width:280px;animation:tIn .22s ease;box-shadow:0 4px 24px rgba(0,0,0,.6);}
+.toast.ok{border-color:#4FFFB0}.toast.er{border-color:var(--red)}.toast.gd{border-color:var(--gold)}
 @keyframes tIn{from{transform:translateX(110%);opacity:0}to{transform:translateX(0);opacity:1}}
-@keyframes tOut{from{transform:translateX(0);opacity:1}to{transform:translateX(110%);opacity:0}}
+@keyframes tOut{from{opacity:1}to{opacity:0;transform:translateX(110%)}}
 
-/* ── CONNECTION ── */
-.conn-dot{width:6px;height:6px;border-radius:50%;display:inline-block;margin-right:5px;}
-.conn-dot.ok{background:#00FF88;box-shadow:0 0 6px #00FF88}
-.conn-dot.bad{background:var(--red);box-shadow:0 0 6px var(--red)}
-.conn-dot.mid{background:var(--gold);box-shadow:0 0 6px var(--gold);animation:blink2 1s infinite}
-
-/* ── FOOTER ── */
-footer{border-top:1px solid var(--border);padding:16px 0;text-align:center;font-family:var(--fm);font-size:10px;color:var(--muted);letter-spacing:2px;position:relative;z-index:2;margin-top:20px;}
-footer span{color:var(--gold);font-family:var(--fd)}
-
-::-webkit-scrollbar{width:4px;height:4px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
-
-/* ── LIGHTNING FLASH ── */
-.lightning-flash{
-  position:fixed;inset:0;background:rgba(200,220,255,0.08);
-  z-index:1;pointer-events:none;opacity:0;
-  animation:lightFlash 0.15s ease-out;
-}
-@keyframes lightFlash{
-  0%{opacity:1}
-  30%{opacity:0.6}
-  60%{opacity:0}
-  80%{opacity:0.3}
-  100%{opacity:0}
-}
-
-/* Rain overlay tint */
-body::after{
-  content:'';position:fixed;inset:0;
-  background:linear-gradient(180deg,rgba(0,20,40,.15) 0%,transparent 40%);
-  pointer-events:none;z-index:0;
-}
+/* ═══ FOOTER ═══ */
+footer{border-top:1px solid var(--border);padding:14px 0;text-align:center;font-family:var(--fm);font-size:9px;color:var(--muted);letter-spacing:3px;position:relative;z-index:3;margin-top:20px;}
+footer span{color:var(--gold);font-family:var(--fd);letter-spacing:2px}
+::-webkit-scrollbar{width:3px;height:3px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
 </style>
 </head>
 <body>
-
-<!-- Rain Canvas -->
 <canvas id="rainCanvas"></canvas>
-<!-- Lightning Canvas -->
-<canvas id="lightningCanvas"></canvas>
-
+<canvas id="lightCanvas"></canvas>
 <div id="toast-c"></div>
 
 <div id="cdOverlay">
@@ -394,45 +369,45 @@ body::after{
   <div class="cdl" id="cdLabel">BERSIAP MENGETIK</div>
 </div>
 
-<!-- Setup Modal -->
+<!-- SETUP -->
 <div class="overlay" id="setupModal">
   <div class="modal">
-    <h2>⚡ MASUK ARENA</h2>
-    <p>Selamat datang di <b style="color:var(--gold);font-family:var(--fd)">TypeRace ALHACKER168</b> — Adu kecepatan mengetik online real-time tanpa server!</p>
+    <h2>⌨ MASUK ARENA</h2>
+    <p>Selamat datang di <b style="color:var(--gold);font-family:var(--fd)">TypeRace ALHACKER168</b> — Latihan solo 60 detik atau lomba multiplayer P2P!</p>
     <div class="igroup">
       <label>Nama Pemain</label>
       <input class="ifield" id="inpName" placeholder="Nama kamu..." maxlength="20" autocomplete="off">
     </div>
     <div class="igroup">
-      <label>Pilih Avatar Kendaraanmu</label>
-      <div class="avpick" id="avpick">
-        <div class="avopt" data-e="🏎️">🏎️</div>
-        <div class="avopt" data-e="🚀">🚀</div>
-        <div class="avopt" data-e="⚡">⚡</div>
-        <div class="avopt" data-e="🔥">🔥</div>
-        <div class="avopt" data-e="💎">💎</div>
-        <div class="avopt" data-e="🦅">🦅</div>
-        <div class="avopt" data-e="🐉">🐉</div>
-        <div class="avopt" data-e="🌊">🌊</div>
-        <div class="avopt" data-e="🎯">🎯</div>
-        <div class="avopt" data-e="💀">💀</div>
-        <div class="avopt" data-e="🏍️">🏍️</div>
-        <div class="avopt" data-e="🛸">🛸</div>
+      <label>Pilih Kendaraan Mewah</label>
+      <div class="car-grid" id="avpick">
+        <div class="car-opt" data-e="🏎️">🏎️</div>
+        <div class="car-opt" data-e="🚗">🚗</div>
+        <div class="car-opt" data-e="🚙">🚙</div>
+        <div class="car-opt" data-e="🚕">🚕</div>
+        <div class="car-opt" data-e="🚘">🚘</div>
+        <div class="car-opt" data-e="🚓">🚓</div>
+        <div class="car-opt" data-e="🚑">🚑</div>
+        <div class="car-opt" data-e="🚒">🚒</div>
+        <div class="car-opt" data-e="🛻">🛻</div>
+        <div class="car-opt" data-e="🚐">🚐</div>
+        <div class="car-opt" data-e="🚌">🚌</div>
+        <div class="car-opt" data-e="🚎">🚎</div>
       </div>
     </div>
-    <button class="btn btn-gold" id="btnEnter" style="width:100%;margin-top:8px;padding:12px">MASUK KE ARENA ▶</button>
+    <button class="btn btn-gold" id="btnEnter" style="width:100%;margin-top:10px;padding:13px;font-size:11px">MASUK KE ARENA ▶</button>
   </div>
 </div>
 
-<!-- Result Modal -->
+<!-- RACE RESULT MODAL -->
 <div class="overlay" id="resultModal" style="display:none">
-  <div class="modal" style="max-width:550px">
+  <div class="modal" style="max-width:560px">
     <h2 id="resultTitle">🏆 HASIL LOMBA</h2>
     <div class="rgrid" id="resultStats"></div>
     <div class="gline"></div>
-    <div style="font-family:var(--fd);font-size:9px;letter-spacing:3px;color:var(--muted);margin-bottom:10px">KLASEMEN AKHIR</div>
+    <div style="font-family:var(--fd);font-size:8px;letter-spacing:4px;color:var(--muted);margin-bottom:10px">KLASEMEN AKHIR</div>
     <div id="resultLb" style="max-height:220px;overflow-y:auto"></div>
-    <div style="display:flex;gap:8px;margin-top:18px;flex-wrap:wrap">
+    <div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap">
       <button class="btn btn-gold" id="btnPlayAgain" style="flex:1">MAIN LAGI</button>
       <button class="btn btn-ghost" id="btnCloseResult" style="flex:1">KEMBALI LOBI</button>
     </div>
@@ -443,9 +418,9 @@ body::after{
 <header>
   <div class="wrap">
     <div class="hinner">
-      <div class="logo">
+      <div>
         <div class="logo-main">⌨ TYPERACE ALHACKER168</div>
-        <div class="logo-sub">ADU KECEPATAN MENGETIK ONLINE REAL-TIME</div>
+        <div class="logo-sub">LUXURY RACING · SOLO PRACTICE · P2P MULTIPLAYER</div>
       </div>
       <div class="hcontrols">
         <select class="lsel" id="langSel">
@@ -460,1023 +435,671 @@ body::after{
           <option value="ar">🇸🇦 العربية</option>
           <option value="ko">🇰🇷 한국어</option>
         </select>
-        <div class="pbadge">
-          <div class="pdot"></div>
-          <div class="pname" id="hdrName">—</div>
-        </div>
-        <button class="btn btn-ghost" id="btnChangeName" style="font-size:8px;padding:6px 10px">GANTI</button>
+        <div class="pbadge"><div class="pdot"></div><div class="pname" id="hdrName">—</div></div>
+        <button class="btn btn-ghost" id="btnChangeName" style="font-size:8px;padding:5px 9px">GANTI</button>
       </div>
     </div>
   </div>
 </header>
 
-<main>
+<main style="padding:16px 0;position:relative;z-index:3">
 <div class="wrap">
   <div class="sfeed" id="sfeed">
-    <div class="sitem">⚡ <span class="hl">TypeRace ALHACKER168</span> — Siap berlomba! P2P WebRTC — tanpa server, tanpa Firebase.</div>
+    <div class="sitem">⚡ <span class="hl">TypeRace ALHACKER168 Luxury</span> — Solo latihan 60 detik atau multiplayer P2P real-time</div>
   </div>
 
-  <!-- HOME -->
-  <div id="homeSection">
-    <div class="rcard">
-      <h3>🚀 Buat Room Baru</h3>
-      <p>Kamu jadi Host. Setelah room dibuat, bagikan kode ke teman untuk bergabung.</p>
-      <div class="igroup" style="margin-bottom:8px">
-        <label>Nama Room</label>
-        <input class="ifield" id="inpRoomName" placeholder="Nama room..." maxlength="25" autocomplete="off">
+  <div class="main-nav">
+    <button class="nav-tab active" id="tabSolo" onclick="switchTab('solo')">🎯 LATIHAN SOLO</button>
+    <button class="nav-tab" id="tabMulti" onclick="switchTab('multi')">🏁 MULTIPLAYER</button>
+  </div>
+
+  <!-- ══════ SOLO ══════ -->
+  <div id="soloSection">
+    <div id="soloHome">
+      <div class="home-grid">
+        <div class="card solo-card">
+          <h3>⏱ LATIHAN 60 DETIK</h3>
+          <p>Ketik sebanyak mungkin dalam 1 menit. Timer mulai otomatis saat kamu mengetik huruf pertama. Kata terus berganti — jangan sampai berhenti!</p>
+          <button class="btn btn-c" id="btnSoloStart" style="width:100%;padding:12px">▶ MULAI LATIHAN</button>
+        </div>
+        <div class="card">
+          <h3>📊 STATISTIK SESI</h3>
+          <p>Rekam perkembangan kamu. Raih WPM tertinggi dan kalahkan rekor sendiri!</p>
+          <div style="margin-top:4px">
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border2)">
+              <span style="font-family:var(--fm);font-size:11px;color:var(--muted2)">WPM Terbaik</span>
+              <span style="font-family:var(--fbb);font-size:24px;color:var(--gold);letter-spacing:2px" id="bestWpmDisplay">—</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding-top:8px">
+              <span style="font-family:var(--fm);font-size:11px;color:var(--muted2)">Total Percobaan</span>
+              <span style="font-family:var(--fbb);font-size:24px;color:var(--cyan);letter-spacing:2px" id="attemptDisplay">0</span>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="igroup" style="margin-bottom:8px">
-        <label>Maks Pemain</label>
-        <select class="lsel ifield" id="selMax" style="width:100%;color:var(--text)">
-          <option value="2">2 Pemain</option>
-          <option value="4" selected>4 Pemain</option>
-          <option value="6">6 Pemain</option>
-          <option value="8">8 Pemain</option>
-        </select>
-      </div>
-      <button class="btn btn-gold" id="btnCreate">BUAT ROOM ✦</button>
     </div>
-    <div class="rcard">
-      <h3>🔗 Gabung Room</h3>
-      <p>Masukkan Peer ID Host dari teman, atau buka link undangan yang dikirim.</p>
-      <div class="igroup" style="margin-bottom:8px">
-        <label>Peer ID Host</label>
-        <input class="ifield" id="inpJoinCode" placeholder="Tempel ID host di sini..." maxlength="50" autocomplete="off">
+
+    <div id="soloArea" style="display:none">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+        <div>
+          <div style="font-family:var(--fd);font-size:16px;color:var(--cyan);letter-spacing:4px">⏱ LATIHAN SOLO</div>
+          <div style="font-family:var(--fm);font-size:9px;color:var(--muted);margin-top:2px;letter-spacing:2px">HITUNG MUNDUR 60 DETIK · KETIK SEBANYAK MUNGKIN</div>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center">
+          <button class="btn btn-ghost" id="btnSoloRestart">↺ ULANG</button>
+          <button class="btn btn-red" id="btnSoloExit">✗ KELUAR</button>
+        </div>
       </div>
-      <button class="btn btn-c" id="btnJoin" style="margin-bottom:14px">GABUNG →</button>
-      <div style="font-size:9px;letter-spacing:2px;color:var(--muted);margin-bottom:6px">STATUS KONEKSI</div>
-      <div style="font-family:var(--fm);font-size:11px;color:var(--muted);display:flex;align-items:center">
-        <span class="conn-dot mid" id="connDot"></span><span id="connText">Menginisialisasi PeerJS...</span>
+
+      <!-- Timer + Stats in one row -->
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:14px;flex-wrap:wrap">
+        <div class="timer-wrap" style="margin-bottom:0;flex-shrink:0">
+          <div class="timer-ring-outer">
+            <svg width="120" height="120" viewBox="0 0 120 120">
+              <circle class="tring-bg" cx="60" cy="60" r="52" stroke-width="7"/>
+              <circle class="tring-fill" id="timerRing" cx="60" cy="60" r="52" stroke-width="7" stroke-dasharray="326.73" stroke-dashoffset="0"/>
+            </svg>
+            <div class="timer-num t-normal" id="timerNum">60</div>
+            <div class="timer-lbl">DETIK</div>
+          </div>
+        </div>
+        <div style="flex:1;min-width:200px">
+          <div class="stats-row">
+            <div class="stat-box sb-wpm"><div class="stat-v" id="soloWpm">0</div><div class="stat-l">WPM</div></div>
+            <div class="stat-box sb-acc"><div class="stat-v" id="soloAcc">100%</div><div class="stat-l">AKURASI</div></div>
+            <div class="stat-box sb-kpm"><div class="stat-v" id="soloKpm">0</div><div class="stat-l">KPM</div></div>
+            <div class="stat-box sb-str"><div class="stat-v" id="soloStreak">0</div><div class="stat-l">STREAK</div></div>
+          </div>
+          <div class="prog-bar-wrap"><div class="prog-bar" id="soloPbar"></div></div>
+        </div>
       </div>
-      <div style="font-size:10px;color:var(--muted);margin-top:8px">ID Kamu: <span id="myPeerId" style="color:var(--g);font-family:var(--fm);cursor:pointer" title="Klik copy">...</span></div>
+
+      <!-- THE TYPING WINDOW — 2-row scrolling -->
+      <div class="typing-window" id="soloBox">
+        <div class="word-display" id="soloDisplay"></div>
+        <input type="text" class="type-input cyan-focus" id="soloInput"
+          placeholder="Mulai ketik di sini — timer mulai saat huruf pertama..."
+          autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+      </div>
+
+      <!-- WPM Graph -->
+      <div class="wpm-graph-wrap">
+        <div class="wpm-graph-title">GRAFIK WPM REAL-TIME (setiap 5 detik)</div>
+        <div class="wpm-bars" id="wpmGraph"></div>
+      </div>
+
+      <!-- Solo Result -->
+      <div class="solo-result" id="soloResult">
+        <div class="res-crown" id="resCrown">🏆</div>
+        <div class="res-wpm-big" id="resWpmBig">0</div>
+        <div class="res-label">KATA PER MENIT</div>
+        <div class="rating-stars" id="ratingStars"></div>
+        <div class="res-grid">
+          <div class="res-item"><div class="res-v" id="resAcc">—</div><div class="res-l">AKURASI</div></div>
+          <div class="res-item"><div class="res-v" id="resKpm">—</div><div class="res-l">KARAKTER</div></div>
+          <div class="res-item"><div class="res-v" id="resWords">—</div><div class="res-l">KATA BENAR</div></div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-c" id="btnSoloAgain" style="flex:1;padding:12px">▶ COBA LAGI</button>
+          <button class="btn btn-gold" id="btnSoloShare" style="flex:1;padding:12px">📋 SALIN HASIL</button>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- RACE AREA -->
-  <div id="raceArea">
-    <div class="spec-bar" id="specBar">👁 MODE PENONTON — Anda sedang menonton perlombaan berlangsung</div>
-    <div class="race-head">
-      <div>
-        <div class="stitle">🏁 RACE ARENA</div>
-        <div class="rinfo" id="raceInfo">—</div>
-      </div>
-      <div class="race-btns">
-        <div class="rstatus" id="raceStatusBadge">MENUNGGU</div>
-        <button class="btn btn-c" id="btnReady" style="display:none">✓ SIAP</button>
-        <button class="btn btn-gold" id="btnStart" style="display:none">▶ MULAI LOMBA</button>
-        <button class="btn btn-red" id="btnLeave">✗ KELUAR</button>
+  <!-- ══════ MULTI ══════ -->
+  <div id="multiSection" style="display:none">
+    <div id="homeSection">
+      <div class="home-grid">
+        <div class="card">
+          <h3>🚀 BUAT ROOM BARU</h3>
+          <p>Jadi Host. Setelah dibuat, bagikan kode ke teman untuk bergabung dan mulai lomba.</p>
+          <div class="igroup" style="margin-bottom:8px"><label>Nama Room</label><input class="ifield" id="inpRoomName" placeholder="Nama room..." maxlength="25" autocomplete="off"></div>
+          <div class="igroup" style="margin-bottom:10px"><label>Maks Pemain</label>
+            <select class="lsel ifield" id="selMax" style="width:100%;color:var(--text)">
+              <option value="2">2 Pemain</option><option value="4" selected>4 Pemain</option>
+              <option value="6">6 Pemain</option><option value="8">8 Pemain</option>
+            </select>
+          </div>
+          <button class="btn btn-gold" id="btnCreate" style="width:100%;padding:12px">BUAT ROOM ✦</button>
+        </div>
+        <div class="card">
+          <h3>🔗 GABUNG ROOM</h3>
+          <p>Masukkan Peer ID Host dari teman, atau buka link undangan. Bisa join sebagai penonton jika sudah penuh.</p>
+          <div class="igroup" style="margin-bottom:8px"><label>Peer ID Host</label><input class="ifield" id="inpJoinCode" placeholder="Tempel ID host di sini..." maxlength="50" autocomplete="off"></div>
+          <button class="btn btn-c" id="btnJoin" style="width:100%;margin-bottom:12px;padding:12px">GABUNG →</button>
+          <div style="font-family:var(--fm);font-size:10px;color:var(--muted);display:flex;align-items:center;gap:4px">
+            <span class="conn-dot mid" id="connDot"></span><span id="connText">Menginisialisasi...</span>
+          </div>
+          <div style="font-family:var(--fm);font-size:10px;color:var(--muted);margin-top:5px">ID Kamu: <span id="myPeerId" style="color:var(--g2);cursor:pointer" title="Klik copy">...</span></div>
+        </div>
       </div>
     </div>
 
-    <div class="lobby">
-      <div class="lhead">
-        <div class="lhead-title">PEMAIN DI ROOM</div>
-        <div class="code-badge" id="codeBadge" title="Klik salin link">📋 ID: <span id="codeSpan">—</span></div>
+    <div id="raceArea" style="display:none">
+      <div class="spec-bar" id="specBar">👁 MODE PENONTON — Anda sedang menonton perlombaan berlangsung</div>
+      <div class="race-header">
+        <div><div class="rtitle">🏁 RACE ARENA</div><div class="rinfo" id="raceInfo">—</div></div>
+        <div class="race-btns">
+          <div class="rstatus" id="raceStatusBadge">MENUNGGU</div>
+          <button class="btn btn-c" id="btnReady" style="display:none">✓ SIAP</button>
+          <button class="btn btn-gold" id="btnStart" style="display:none">▶ MULAI LOMBA</button>
+          <button class="btn btn-red" id="btnLeave">✗ KELUAR</button>
+        </div>
       </div>
-      <div class="plist" id="playerList"></div>
-      <div class="slist" id="specList"></div>
-    </div>
-
-    <div class="track-wrap">
-      <div class="twrap-title">
-        🏁 LINTASAN BALAP
-        <span class="tod-label" id="todLabel">—</span>
+      <div class="lobby">
+        <div class="lhead">
+          <div class="lhead-title">PEMAIN DI ROOM</div>
+          <div class="code-badge" id="codeBadge" title="Klik salin link">📋 ID: <span id="codeSpan">—</span></div>
+        </div>
+        <div class="plist" id="playerList"></div>
+        <div class="slist" id="specList"></div>
       </div>
-      <div id="trackList"></div>
-    </div>
-
-    <div class="stats">
-      <div class="stat wpm"><div class="stat-v" id="sWpm">0</div><div class="stat-l">WPM</div></div>
-      <div class="stat acc"><div class="stat-v" id="sAcc">100%</div><div class="stat-l">AKURASI</div></div>
-      <div class="stat tim"><div class="stat-v" id="sTim">0s</div><div class="stat-l">WAKTU</div></div>
-      <div class="stat pos"><div class="stat-v" id="sPos">—</div><div class="stat-l">POSISI</div></div>
-    </div>
-    <div class="pbar-wrap"><div class="pbar" id="pbar" style="width:0%"></div></div>
-
-    <div class="typing-sec" id="typingSec">
-      <div class="tdisplay" id="tdisplay">
-        <span style="color:var(--muted);font-family:var(--fd);font-size:12px;letter-spacing:4px">MENUNGGU RACE DIMULAI...</span>
+      <div class="track-section">
+        <div class="track-section-hd">
+          <span>🏁 LINTASAN BALAP MEWAH</span>
+          <span class="tod-badge" id="todLabel">—</span>
+        </div>
+        <div id="trackList"></div>
       </div>
-      <input type="text" class="tinput" id="tinput"
-        placeholder="Ketik kata di sini, tekan SPASI untuk lanjut kata berikutnya..."
-        disabled autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+      <div class="race-stats-row stats-row">
+        <div class="stat-box rsb-wpm"><div class="stat-v" id="sWpm">0</div><div class="stat-l">WPM</div></div>
+        <div class="stat-box sb-acc"><div class="stat-v" id="sAcc">100%</div><div class="stat-l">AKURASI</div></div>
+        <div class="stat-box sb-str"><div class="stat-v" id="sTim">0s</div><div class="stat-l">WAKTU</div></div>
+        <div class="stat-box sb-kpm"><div class="stat-v" id="sPos">—</div><div class="stat-l">POSISI</div></div>
+      </div>
+      <div class="prog-bar-wrap"><div class="prog-bar" id="pbar" style="background:linear-gradient(90deg,var(--g),var(--g2));box-shadow:0 0 8px var(--g)"></div></div>
+
+      <!-- Race typing window -->
+      <div class="typing-window" id="typingSec">
+        <div class="word-display" id="tdisplay">
+          <div class="word-row" id="raceWordRow" style="margin-top:0">
+            <span style="color:var(--muted);font-family:var(--fd);font-size:13px;letter-spacing:4px">MENUNGGU RACE DIMULAI...</span>
+          </div>
+        </div>
+        <input type="text" class="type-input" id="tinput"
+          placeholder="Ketik kata di sini — tekan SPASI untuk lanjut..."
+          disabled autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+      </div>
     </div>
   </div>
+
 </div>
 </main>
 
 <footer>
-  <div class="wrap">
-    <span>TYPERACE ALHACKER168</span> — Real-time P2P via WebRTC · No Server · No Firebase · GitHub Pages Ready
-  </div>
+  <div class="wrap"><span>TYPERACE ALHACKER168</span> · LUXURY EDITION · P2P WebRTC · No Server · Solo + Multiplayer</div>
 </footer>
 
 <script>
-// ================================================================
-//  TypeRace ALHACKER168 — Full Enhanced Version
-// ================================================================
+// ══════════════════════════════════════════════════════════════
+//  TypeRace ALHACKER168 — Luxury Edition  (Word-Scroll Mode)
+// ══════════════════════════════════════════════════════════════
 
-// ── BLOCK DEVTOOLS / VIEW SOURCE ───────────────────────────────
+// ── DEVTOOLS BLOCK ────────────────────────────────────────────
 (function(){
-  // Block right-click context menu
-  document.addEventListener('contextmenu', function(e){ e.preventDefault(); return false; });
-
-  // Block keyboard shortcuts for devtools and view source
-  document.addEventListener('keydown', function(e){
-    // F12
-    if(e.key === 'F12'){ e.preventDefault(); e.stopPropagation(); return false; }
-    // Ctrl+Shift+I / Cmd+Option+I (devtools)
-    if((e.ctrlKey||e.metaKey) && e.shiftKey && (e.key==='I'||e.key==='i')){ e.preventDefault(); return false; }
-    // Ctrl+Shift+J (console)
-    if((e.ctrlKey||e.metaKey) && e.shiftKey && (e.key==='J'||e.key==='j')){ e.preventDefault(); return false; }
-    // Ctrl+Shift+C (inspect element)
-    if((e.ctrlKey||e.metaKey) && e.shiftKey && (e.key==='C'||e.key==='c')){ e.preventDefault(); return false; }
-    // Ctrl+U (view source)
-    if((e.ctrlKey||e.metaKey) && (e.key==='U'||e.key==='u')){ e.preventDefault(); return false; }
-    // Ctrl+S (save)
-    if((e.ctrlKey||e.metaKey) && (e.key==='S'||e.key==='s')){ e.preventDefault(); return false; }
-  }, true);
-
-  // Devtools size detection (basic)
-  let devOpen = false;
-  const threshold = 160;
-  setInterval(function(){
-    const wDiff = window.outerWidth - window.innerWidth;
-    const hDiff = window.outerHeight - window.innerHeight;
-    if(wDiff > threshold || hDiff > threshold){
-      if(!devOpen){
-        devOpen = true;
-        document.body.innerHTML = '<div style="position:fixed;inset:0;background:#04060F;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;font-family:monospace;color:#00FFCC;font-size:18px;letter-spacing:4px;text-align:center;"><div style="font-size:48px">🔒</div><div>AKSES DITOLAK</div><div style="font-size:11px;color:#4A607A;letter-spacing:2px">INSPECT ELEMENT TIDAK DIIZINKAN</div></div>';
-      }
-    } else {
-      devOpen = false;
-    }
-  }, 500);
+  document.addEventListener('contextmenu',e=>e.preventDefault());
+  document.addEventListener('keydown',e=>{
+    if(e.key==='F12'){e.preventDefault();return false;}
+    if((e.ctrlKey||e.metaKey)&&e.shiftKey&&'IJCijc'.includes(e.key)){e.preventDefault();return false;}
+    if((e.ctrlKey||e.metaKey)&&'USus'.includes(e.key)){e.preventDefault();return false;}
+  },true);
 })();
 
-// ── RAIN SYSTEM ───────────────────────────────────────────────
-const rainCanvas = document.getElementById('rainCanvas');
-const rainCtx = rainCanvas.getContext('2d');
-const lightCanvas = document.getElementById('lightningCanvas');
-const lightCtx = lightCanvas.getContext('2d');
+// ── CANVAS / RAIN / LIGHTNING ─────────────────────────────────
+const RC=document.getElementById('rainCanvas'),RX=RC.getContext('2d');
+const LC=document.getElementById('lightCanvas'),LX=LC.getContext('2d');
+function resizeC(){RC.width=LC.width=window.innerWidth;RC.height=LC.height=window.innerHeight;}
+resizeC();window.addEventListener('resize',resizeC);
 
-function resizeCanvases(){
-  rainCanvas.width = window.innerWidth;
-  rainCanvas.height = window.innerHeight;
-  lightCanvas.width = window.innerWidth;
-  lightCanvas.height = window.innerHeight;
-}
-resizeCanvases();
-window.addEventListener('resize', resizeCanvases);
+class Drop{constructor(){this.reset(true)}reset(i=false){this.x=Math.random()*RC.width;this.y=i?Math.random()*RC.height:-20;this.len=14+Math.random()*24;this.spd=15+Math.random()*18;this.op=.08+Math.random()*.28;this.w=.5+Math.random()*1.1;this.ang=.14+Math.random()*.06;}
+update(){this.x+=Math.sin(this.ang)*this.spd*.3;this.y+=this.spd;if(this.y>RC.height+30)this.reset();}
+draw(ctx){ctx.save();ctx.strokeStyle=`rgba(160,210,255,${this.op})`;ctx.lineWidth=this.w;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(this.x,this.y);ctx.lineTo(this.x+Math.sin(this.ang)*this.len,this.y+this.len);ctx.stroke();ctx.restore();}}
+const drops=[];for(let i=0;i<240;i++)drops.push(new Drop());
 
-// Rain drops
-const rainDrops = [];
-const DROP_COUNT = 250;
+let nextL=3000+Math.random()*6000,lightOn=false,bolts=[],flashA=0;
+function makeBolt(x1,y1,x2,y2,n=10){const pts=[{x:x1,y:y1}];const dx=x2-x1,dy=y2-y1,d=Math.sqrt(dx*dx+dy*dy);for(let i=1;i<n;i++){const t=i/n;pts.push({x:x1+dx*t+(Math.random()-.5)*d*.4,y:y1+dy*t+(Math.random()-.5)*d*.12});}pts.push({x:x2,y:y2});return pts;}
+function trigL(){lightOn=true;flashA=1;const x=LC.width*(.1+Math.random()*.8),ey=LC.height*(.3+Math.random()*.5);bolts=[{pts:makeBolt(x,0,x+(Math.random()-.5)*200,ey,14),a:1,w:3+Math.random()*4}];for(let i=0;i<3+Math.floor(Math.random()*3);i++){const bi=Math.floor(Math.random()*bolts[0].pts.length),bp=bolts[0].pts[bi];bolts.push({pts:makeBolt(bp.x,bp.y,bp.x+(Math.random()-.5)*260,ey*(.3+Math.random()*.7),6),a:.5,w:1+Math.random()*2});}
+setTimeout(()=>{flashA=.4},80);setTimeout(()=>{flashA=0;lightOn=false;bolts=[]},180);
+document.body.style.transition='transform .05s';document.body.style.transform=`translate(${(Math.random()-.5)*3}px,${(Math.random()-.5)*2}px)`;setTimeout(()=>document.body.style.transform='',100);}
+function drawL(){LX.clearRect(0,0,LC.width,LC.height);if(!lightOn)return;if(flashA>0){LX.fillStyle=`rgba(180,210,255,${flashA*.05})`;LX.fillRect(0,0,LC.width,LC.height);}bolts.forEach(b=>{if(b.pts.length<2)return;LX.save();LX.shadowBlur=40;LX.shadowColor='rgba(150,180,255,.9)';LX.strokeStyle=`rgba(200,220,255,${b.a*.4})`;LX.lineWidth=b.w*4;LX.lineCap='round';LX.lineJoin='round';LX.beginPath();LX.moveTo(b.pts[0].x,b.pts[0].y);b.pts.slice(1).forEach(p=>LX.lineTo(p.x,p.y));LX.stroke();LX.shadowBlur=12;LX.strokeStyle=`rgba(255,255,255,${b.a})`;LX.lineWidth=b.w;LX.beginPath();LX.moveTo(b.pts[0].x,b.pts[0].y);b.pts.slice(1).forEach(p=>LX.lineTo(p.x,p.y));LX.stroke();LX.restore();});}
 
-class RainDrop {
-  constructor(){this.reset(true);}
-  reset(initial=false){
-    this.x = Math.random() * rainCanvas.width;
-    this.y = initial ? Math.random() * rainCanvas.height : -20;
-    this.length = 12 + Math.random() * 22;
-    this.speed = 14 + Math.random() * 18;
-    this.opacity = 0.12 + Math.random() * 0.35;
-    this.thickness = 0.6 + Math.random() * 1.2;
-    this.angle = 0.15 + Math.random() * 0.08; // slight angle (wind)
-    this.r = Math.random() > 0.85 ? 60 : (Math.random() > 0.5 ? 140 : 200); // color variation
-    this.g = 200 + Math.floor(Math.random()*55);
-    this.b = 255;
-  }
-  update(){
-    this.x += Math.sin(this.angle) * this.speed * 0.4;
-    this.y += this.speed;
-    if(this.y > rainCanvas.height + 30) this.reset();
-  }
-  draw(ctx){
-    ctx.save();
-    ctx.strokeStyle = `rgba(${this.r},${this.g},${this.b},${this.opacity})`;
-    ctx.lineWidth = this.thickness;
-    ctx.lineCap = 'round';
-    ctx.shadowBlur = 2;
-    ctx.shadowColor = `rgba(180,220,255,0.3)`;
-    ctx.beginPath();
-    ctx.moveTo(this.x, this.y);
-    ctx.lineTo(this.x + Math.sin(this.angle)*this.length, this.y + this.length);
-    ctx.stroke();
-    ctx.restore();
-  }
-}
-
-// Splash particles at bottom
-class Splash {
-  constructor(x, y){
-    this.x = x; this.y = y;
-    this.particles = [];
-    for(let i=0;i<5;i++){
-      const ang = (Math.PI * (0.8 + Math.random()*0.4)) - Math.random()*0.5;
-      this.particles.push({
-        vx: Math.cos(ang) * (1+Math.random()*3),
-        vy: -Math.random()*3,
-        life:1, decay: 0.06+Math.random()*0.08,
-        r: 2+Math.random()*3
-      });
-    }
-    this.dead = false;
-  }
-  update(){
-    let alive = false;
-    this.particles.forEach(p=>{
-      p.vy += 0.2;
-      p.x = (p.x||this.x) + p.vx;
-      p.y = (p.y||this.y) + p.vy;
-      p.life -= p.decay;
-      if(p.life > 0) alive = true;
-    });
-    if(!alive) this.dead = true;
-  }
-  draw(ctx){
-    this.particles.forEach(p=>{
-      if(p.life<=0) return;
-      ctx.save();
-      ctx.globalAlpha = p.life * 0.4;
-      ctx.strokeStyle = 'rgba(160,210,255,0.7)';
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.arc(p.x||this.x, p.y||this.y, p.r*p.life, 0, Math.PI*2);
-      ctx.stroke();
-      ctx.restore();
-    });
-  }
-}
-
-for(let i=0;i<DROP_COUNT;i++) rainDrops.push(new RainDrop());
-const splashes = [];
-
-// ── LIGHTNING SYSTEM ──────────────────────────────────────────
-let nextLightning = 2000 + Math.random()*5000;
-let lightningActive = false;
-let lightBolts = [];
-let flashAlpha = 0;
-
-function generateBolt(x1,y1,x2,y2,depth,segs=8){
-  if(depth<=0) return [{x:x1,y:y1},{x:x2,y:y2}];
-  const pts = [{x:x1,y:y1}];
-  const dx=x2-x1, dy=y2-y1;
-  const dist = Math.sqrt(dx*dx+dy*dy);
-  for(let i=1;i<segs;i++){
-    const t = i/segs;
-    const px = x1+dx*t + (Math.random()-.5)*dist*0.45;
-    const py = y1+dy*t + (Math.random()-.5)*dist*0.15;
-    pts.push({x:px,y:py});
-  }
-  pts.push({x:x2,y:y2});
-  return pts;
-}
-
-function triggerLightning(){
-  lightningActive = true;
-  flashAlpha = 1;
-  const x = lightCanvas.width * (0.1 + Math.random()*0.8);
-  const startY = 0;
-  const endY = lightCanvas.height * (0.3 + Math.random()*0.5);
-  lightBolts = [{pts: generateBolt(x,startY,x+(Math.random()-.5)*200,endY,3,12), alpha:1, width:3+Math.random()*4}];
-  // Branch bolts
-  const branchCount = 2+Math.floor(Math.random()*4);
-  for(let i=0;i<branchCount;i++){
-    const bi = Math.floor(Math.random()*lightBolts[0].pts.length);
-    const bp = lightBolts[0].pts[bi];
-    const bx = bp.x + (Math.random()-.5)*300;
-    const by = endY * (0.3+Math.random()*0.7);
-    lightBolts.push({pts: generateBolt(bp.x,bp.y,bx,by,2,6), alpha:0.6, width:1+Math.random()*2});
-  }
-  // Second flash (flicker)
-  setTimeout(()=>{ flashAlpha = 0.5; }, 80);
-  setTimeout(()=>{ flashAlpha = 0; lightningActive = false; lightBolts = []; }, 200);
-  // Thunder shake
-  document.body.style.animation = 'none';
-  requestAnimationFrame(()=>{
-    document.body.style.transition = 'transform 0.06s';
-    document.body.style.transform = `translate(${(Math.random()-.5)*4}px,${(Math.random()-.5)*3}px)`;
-    setTimeout(()=>document.body.style.transform='',120);
-  });
-}
-
-function drawLightning(){
-  lightCtx.clearRect(0,0,lightCanvas.width,lightCanvas.height);
-  if(!lightningActive) return;
-
-  // Flash overlay
-  if(flashAlpha > 0){
-    lightCtx.fillStyle = `rgba(180,210,255,${flashAlpha*0.07})`;
-    lightCtx.fillRect(0,0,lightCanvas.width,lightCanvas.height);
-  }
-
-  lightBolts.forEach(bolt=>{
-    if(bolt.pts.length < 2) return;
-    // Outer glow
-    lightCtx.save();
-    lightCtx.shadowBlur = 40;
-    lightCtx.shadowColor = 'rgba(150,180,255,0.9)';
-    lightCtx.strokeStyle = `rgba(200,220,255,${bolt.alpha*0.4})`;
-    lightCtx.lineWidth = bolt.width * 4;
-    lightCtx.lineCap = 'round';
-    lightCtx.lineJoin = 'round';
-    lightCtx.beginPath();
-    lightCtx.moveTo(bolt.pts[0].x, bolt.pts[0].y);
-    bolt.pts.slice(1).forEach(p=>lightCtx.lineTo(p.x,p.y));
-    lightCtx.stroke();
-    // Core bright
-    lightCtx.shadowBlur = 15;
-    lightCtx.shadowColor = 'rgba(255,255,255,1)';
-    lightCtx.strokeStyle = `rgba(255,255,255,${bolt.alpha})`;
-    lightCtx.lineWidth = bolt.width;
-    lightCtx.beginPath();
-    lightCtx.moveTo(bolt.pts[0].x, bolt.pts[0].y);
-    bolt.pts.slice(1).forEach(p=>lightCtx.lineTo(p.x,p.y));
-    lightCtx.stroke();
-    lightCtx.restore();
-  });
-}
+let lt=0;
+function loop(ts){const dt=ts-lt;lt=ts;RX.clearRect(0,0,RC.width,RC.height);drops.forEach(d=>{d.update();d.draw(RX);});nextL-=dt;if(nextL<=0&&!lightOn){trigL();nextL=3500+Math.random()*9000;}drawL();requestAnimationFrame(loop);}
+requestAnimationFrame(loop);
 
 // ── TIME OF DAY ───────────────────────────────────────────────
-function getTimeOfDay(){
-  const h = new Date().getHours();
-  if(h>=5 && h<10) return 'morning';
-  if(h>=10 && h<16) return 'afternoon';
-  if(h>=16 && h<20) return 'sunset';
-  return 'night';
-}
-function getTodLabel(){
-  const t = getTimeOfDay();
-  const labels = {morning:'☀ PAGI HARI',afternoon:'🌤 SIANG HARI',sunset:'🌅 SENJA',night:'🌙 MALAM HARI'};
-  const colors = {morning:'rgba(255,200,80,.8)',afternoon:'rgba(100,180,255,.8)',sunset:'rgba(255,100,80,.8)',night:'rgba(100,120,255,.8)'};
-  return {label:labels[t], color:colors[t]};
-}
-
-// ── MAIN RENDER LOOP ──────────────────────────────────────────
-let lastTime = 0;
-function mainLoop(ts){
-  const dt = ts - lastTime; lastTime = ts;
-
-  // Rain
-  rainCtx.clearRect(0,0,rainCanvas.width,rainCanvas.height);
-  rainDrops.forEach(d=>{
-    d.update();
-    d.draw(rainCtx);
-    // Occasional splash at bottom
-    if(d.y >= rainCanvas.height-10 && Math.random()<0.02){
-      splashes.push(new Splash(d.x, rainCanvas.height-5));
-    }
-  });
-  // Splashes
-  for(let i=splashes.length-1;i>=0;i--){
-    splashes[i].update();
-    splashes[i].draw(rainCtx);
-    if(splashes[i].dead) splashes.splice(i,1);
-  }
-
-  // Lightning timing
-  nextLightning -= dt;
-  if(nextLightning <= 0 && !lightningActive){
-    triggerLightning();
-    nextLightning = 3000 + Math.random()*8000;
-  }
-  drawLightning();
-
-  requestAnimationFrame(mainLoop);
-}
-requestAnimationFrame(mainLoop);
-
-// ── TEXTS ──────────────────────────────────────────────────────
-const TEXTS={
-  id:["Teknologi informasi telah mengubah cara kita berkomunikasi dan bekerja setiap harinya dengan sangat drastis",
-      "Kecepatan mengetik adalah keterampilan penting yang harus dikuasai di era digital yang terus berkembang",
-      "Indonesia adalah negara kepulauan terbesar di dunia dengan lebih dari tujuh belas ribu pulau yang indah",
-      "Belajar dengan tekun dan konsisten setiap hari akan membawa hasil yang luar biasa dalam kehidupan nyata",
-      "Semangat juang yang tinggi dan kerja keras tanpa henti adalah kunci kesuksesan setiap individu berbakat",
-      "Inovasi teknologi terus mendorong kemajuan peradaban manusia ke tingkat yang lebih tinggi dari sebelumnya"],
-  en:["The quick brown fox jumps over the lazy dog near the beautiful riverbank in the morning sunshine",
-      "Technology has transformed the way we communicate collaborate and share information across the modern world",
-      "Practice makes perfect when it comes to developing your typing speed accuracy and keyboard fluency",
-      "The future belongs to those who believe in the beauty of their dreams and work hard daily",
-      "Innovation drives progress and opens new doors to incredible opportunities never imagined before"],
-  ms:["Malaysia adalah sebuah negara yang kaya dengan kepelbagaian budaya tradisi dan warisan yang sangat unik",
-      "Kelajuan menaip adalah kemahiran penting dalam dunia digital yang semakin maju dan berkembang pesat hari ini"],
-  es:["La velocidad de escritura es una habilidad importante en la era digital moderna y tecnologica",
-      "La tecnologia ha transformado profundamente la forma en que nos comunicamos y trabajamos juntos"],
-  fr:["La technologie a transforme notre facon de communiquer et de travailler au quotidien dans le monde moderne",
-      "La vitesse de frappe est une competence essentielle dans le monde numerique actuel et connecte"],
-  de:["Technologie hat die Art und Weise wie wir kommunizieren und miteinander arbeiten grundlegend veraendert",
-      "Schreibgeschwindigkeit ist eine wichtige Faehigkeit im modernen digitalen Zeitalter von heute"],
-  ja:["技術革新は私たちのコミュニケーションと仕事の方法を根本から大きく変えました","タイピング速度はデジタル時代における非常に重要なスキルの一つです"],
-  zh:["技术创新从根本上改变了我们沟通和工作的方式推动了社会进步","打字速度是数字时代中非常重要的一项基本技能"],
-  ar:["التكنولوجيا غيرت طريقة تواصلنا وعملنا بشكل جذري في العصر الحديث","سرعة الكتابة مهارة اساسية لا غنى عنها في العصر الرقمي المتقدم"],
-  ko:["기술 혁신은 우리의 소통 방식과 업무 방식을 근본적으로 바꾸어 놓았습니다","타이핑 속도는 현대 디지털 시대에서 매우 중요한 핵심 기술입니다"],
+function getTOD(){const h=new Date().getHours();if(h>=5&&h<10)return'morning';if(h>=10&&h<16)return'afternoon';if(h>=16&&h<20)return'sunset';return'night';}
+const TOD=getTOD();
+const TOD_INFO={
+  morning:{sky:'sky-morning',road:'road-day',deco:'<div class="deco-sun">☀️</div>',label:'☀ PAGI',color:'rgba(255,200,80,.9)'},
+  afternoon:{sky:'sky-afternoon',road:'road-day',deco:'<div class="deco-sun" style="right:32px;font-size:13px">☀</div>',label:'🌤 SIANG',color:'rgba(100,190,255,.9)'},
+  sunset:{sky:'sky-sunset',road:'road-night',deco:'<div class="deco-sun" style="right:12px;top:2px;font-size:13px">🌅</div>',label:'🌅 SENJA',color:'rgba(255,120,80,.9)'},
+  night:{sky:'sky-night',road:'road-night',deco:'<div class="deco-stars">✦ ✧ · ✦</div><div class="deco-moon">🌙</div>',label:'🌙 MALAM',color:'rgba(120,150,255,.9)'},
 };
-function randText(l){const a=TEXTS[l]||TEXTS.id;return a[Math.floor(Math.random()*a.length)]}
+
+// ── WORD BANKS (all languages, 200+ unique words) ─────────────
+// Each language has a big pool; we pick randomly to build long streams
+const WORDBANKS={
+  id:['teknologi','informasi','mengubah','komunikasi','bekerja','setiap','harinya','drastis','kecepatan','mengetik','keterampilan','penting','dikuasai','era','digital','berkembang','Indonesia','kepulauan','terbesar','dunia','lebih','tujuh','belas','ribu','pulau','indah','beragam','budaya','Sabang','Merauke','belajar','tekun','konsisten','hasil','luar','biasa','kehidupan','nyata','kesabaran','ketekunan','kunci','kesuksesan','semangat','juang','tinggi','kerja','keras','tanpa','henti','individu','berbakat','mimpi','cita-cita','setinggi','langit','keyakinan','inovasi','mendorong','kemajuan','peradaban','manusia','tingkat','membuka','pintu','kesempatan','baru','generasi','persahabatan','tulus','kepercayaan','harta','berharga','dalam','teman','sejati','selalu','suka','duka','membaca','buku','memperluas','wawasan','pengetahuan','tentang','meningkatkan','kemampuan','berpikir','kritis','analitis','diperlukan','modern','negara','bangsa','rakyat','maju','sejahtera','makmur','bahagia','cerdas','kreatif','inovatif','produktif','kompetitif','global','nasional','lokal','regional','internasional','pembangunan','pertumbuhan','ekonomi','sosial','budaya','lingkungan','alam','sumber','daya','manusia','alam','terjaga','lestari','hijau','bersih','sehat','sejuk'],
+  en:['the','quick','brown','fox','jumps','over','lazy','dog','technology','has','transformed','way','communicate','collaborate','share','information','across','globe','making','modern','world','more','connected','than','ever','before','human','history','practice','makes','perfect','comes','developing','typing','speed','accuracy','consistent','daily','effort','only','path','mastering','any','skill','worth','having','life','future','belongs','those','who','believe','beauty','their','dreams','work','tirelessly','every','single','day','turn','vision','into','magnificent','reality','all','see','innovation','drives','progress','opens','new','doors','incredible','opportunities','were','never','imagined','previous','generations','could','not','foresee','pace','advancement','reading','books','expands','knowledge','understanding','while','simultaneously','strengthening','vocabulary','improving','overall','communication','skills','significantly','greatest','achievements','always','come','from','people','refused','give','up','even','when','faced','seemingly','insurmountable','challenges','obstacles','keyboard','interface','make','difference','between','frustration','flow','allowing','skilled','typists','express','thoughts','fast','mind','can','generate','them','learning','growing','improving','dedication','perseverance','excellence','success'],
+  ms:['Malaysia','negara','kaya','kepelbagaian','budaya','tradisi','warisan','unik','bernilai','tinggi','perlu','dijaga','dipelihara','setiap','generasi','kelajuan','menaip','kemahiran','penting','dunia','digital','semakin','maju','berkembang','pesat','hari','ini','hampir','semua','bidang','pekerjaan','memerlukan','kejayaan','tidak','datang','sendirinya','tetapi','diusahakan','gigih','bersungguh','tanpa','jemu','kerja','keras','dapat','dicapai','semangat','ilmu','pengetahuan','pendidikan','rakyat','bangsa','maju','sejahtera','makmur','bahagia','cerdas','kreatif','inovatif','produktif'],
+  es:['velocidad','escritura','habilidad','fundamental','era','digital','moderna','tecnologica','vivimos','hoy','dia','todo','depende','nuestra','capacidad','comunicarnos','tecnologia','transformado','profundamente','forma','trabajamos','aprendemos','abriendo','nuevas','posibilidades','nunca','antes','habian','imaginadas','generaciones','anteriores','exito','llega','solo','sino','trabajar','dedicacion','perseverancia','cada','dia','alcanzar','suenos','metas','propuesto','determinacion','conocimiento','aprendizaje','educacion','cultura','sociedad','progreso','innovacion','creatividad','inteligencia','habilidad','destreza','practica','constancia','esfuerzo','logro','meta','objetivo'],
+  fr:['technologie','transforme','facon','communiquer','travailler','quotidien','monde','moderne','connecte','ouvrant','possibilites','etaient','imaginables','quelques','decennies','vitesse','frappe','competence','essentielle','numerique','actuel','communication','rapide','precise','devenue','necessite','absolue','domaines','succes','appartient','ceux','perseverent','travaillent','acharnement','realiser','reves','atteindre','objectifs','malgre','obstacles','defis','rencontres','connaissance','apprentissage','education','culture','societe','progres','innovation','creativite','intelligence','habilete','pratique','constance','effort','realisation','objectif'],
+  de:['Technologie','Kommunikation','arbeiten','Informationen','teilen','grundlegend','nachhaltig','veraendert','Moeglichkeiten','eroeffnet','Schreibgeschwindigkeit','wichtige','unverzichtbare','Faehigkeit','modernen','digitalen','Zeitalter','schnelle','praezise','allen','Bereichen','beruflichen','Lebens','entscheidend','Erfolg','kommt','selbst','muss','harte','Arbeit','unerschuetterliche','Ausdauer','jeden','erarbeitet','werden','denn','beharrlich','bleibt','letztendlich','seine','Ziele','erreichen','Wissen','Lernen','Bildung','Kultur','Gesellschaft','Fortschritt','Innovation','Kreativitaet','Intelligenz','Faehigkeit','Geschick','Praxis','Bestaendigkeit','Anstrengung'],
+  ja:['技術','革新','コミュニケーション','方法','根本','から','大きく','変え','てきました','現代','世界','かつて','ないほど','密接','繋がっています','タイピング','速度','非常に','重要','スキル','毎日','坚持','練習','才能','不断','向上','できます','知識','学習','教育','文化','社会','進歩','イノベーション','創造性','知性','能力','技巧','実践','一貫性','努力','達成','目標'],
+  zh:['在','数字','时代','打字','速度','是','一项','非常','重要','的','基本','技能','通过','每天','坚持','练习','才能','不断','提升','自己','和','准确率','达到','专业','水平','技术','创新','从','根本上','改变','了','我们','沟通','工作','学习','的','方式','为','全世界','的','人们','开辟','了','前所未有','无限','可能','和','发展','机遇','知识','教育','文化','社会','进步','创造力','智慧','能力','技巧','实践'],
+  ar:['في','العصر','الرقمي','الحديث','تعتبر','سرعة','الكتابة','مهارة','اساسية','لا','غنى','عنها','في','جميع','مجالات','العمل','والدراسة','والتواصل','اليومي','بين','الناس','التكنولوجيا','غيرت','بشكل','جذري','طريقة','تواصلنا','وعملنا','وتعلمنا','وفتحت','آفاقا','جديدة','لم','تكن','متخيلة','من','قبل','لدى','الاجيال','السابقة','المعرفة','التعلم','التعليم','الثقافة','المجتمع','التقدم','الابتكار','الإبداع','الذكاء','المهارة','الممارسة','الإصرار','الجهد'],
+  ko:['디지털','시대에서','타이핑','속도는','매우','중요한','핵심','기술이며','매일','꾸준한','연습을','통해서만','향상시킬','수','있는','전문적인','능력입니다','기술','혁신은','우리의','소통','방식과','업무','방식','그리고','학습','방법을','근본적으로','변화시켜','왔으며','전','세계','사람들에게','새로운','가능성을','열어주었습니다','지식','학습','교육','문화','사회','발전','혁신','창의성','지성','능력','기술','연습','일관성','노력','성취','목표'],
+};
+
+function getWordBank(lang){return WORDBANKS[lang]||WORDBANKS.id;}
+function buildWordStream(lang,n=300){
+  const bank=getWordBank(lang);const out=[];
+  for(let i=0;i<n;i++)out.push(bank[Math.floor(Math.random()*bank.length)]);
+  return out;
+}
 
 // ── STATE ──────────────────────────────────────────────────────
 const S={
   name:'',avatar:'🏎️',lang:'id',
-  peerId:'',peer:null,
-  isHost:false,isSpec:false,isReady:false,
+  peerId:'',peer:null,isHost:false,isSpec:false,isReady:false,
   raceOn:false,raceDone:false,
-  text:'',words:[],currentWordIdx:0,
-  currentInput:'',wrongWords:new Set(),
-  completedWords:0,startTime:null,
-  myProg:0,myWpm:0,myAcc:100,
-  timerIv:null,
-  conns:{},hostConn:null,
-  players:{},specs:{},
-  colors:['#00FFCC','#FFD700','#FF3366','#00AAFF','#BB66FF','#FF8844','#44FF88','#FF44BB'],
+  text:'',raceWords:[],rWi:0,rCi:'',rWrong:new Set(),rDone:0,
+  startTime:null,myProg:0,myWpm:0,myAcc:100,timerIv:null,
+  conns:{},hostConn:null,players:{},specs:{},
+  colors:['#C9A84C','#00E5FF','#FF2244','#4FFFB0','#9B59B6','#FF8C00','#FF69B4','#7FFFD4'],
   colorMap:{},maxPlayers:4,roomName:'',raceStatus:'waiting',
+  // Solo
+  soloOn:false,soloDone:false,soloSec:60,soloTimerIv:null,soloSegIv:null,
+  soloStartTime:null,soloWords:[],soloWi:0,soloCi:'',soloWrong:new Set(),
+  soloDone2:0,soloCorrectChars:0,soloTotalChars:0,soloStreak:0,soloMaxStreak:0,
+  soloWpmHist:[],soloWpm:0,bestWpm:0,attempts:0,
 };
-
 const $=id=>document.getElementById(id);
-function uid(n=8){return Math.random().toString(36).slice(2,2+n).toUpperCase()}
-function getColor(pid){
-  if(!S.colorMap[pid]){
-    const used=Object.values(S.colorMap);
-    const avail=S.colors.filter(c=>!used.includes(c));
-    S.colorMap[pid]=avail.length?avail[0]:S.colors[Object.keys(S.colorMap).length%S.colors.length];
-  }
-  return S.colorMap[pid];
-}
-function toast(msg,type='',ms=3000){
-  const el=document.createElement('div');
-  el.className=`toast${type?' '+type:''}`;el.textContent=msg;
-  $('toast-c').appendChild(el);
-  setTimeout(()=>{el.style.animation='tOut .25s ease forwards';setTimeout(()=>el.remove(),260)},ms);
-}
-function log(html){
-  const f=$('sfeed'),d=document.createElement('div');d.className='sitem';
-  const t=new Date().toLocaleTimeString('id',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-  d.innerHTML=`<span style="color:var(--muted)">[${t}]</span> ${html}`;
-  f.appendChild(d);f.scrollTop=f.scrollHeight;
-  while(f.children.length>80)f.removeChild(f.firstChild);
-}
-function save(){try{localStorage.setItem('tr168',JSON.stringify({name:S.name,avatar:S.avatar,lang:S.lang}))}catch(e){}}
-function load(){
-  try{const d=JSON.parse(localStorage.getItem('tr168')||'null');
-    if(d){S.name=d.name||'';S.avatar=d.avatar||'🏎️';S.lang=d.lang||'id';}
-  }catch(e){}
+function uid(n=8){return Math.random().toString(36).slice(2,2+n).toUpperCase();}
+function getColor(pid){if(!S.colorMap[pid]){const u=Object.values(S.colorMap);const av=S.colors.filter(c=>!u.includes(c));S.colorMap[pid]=av.length?av[0]:S.colors[Object.keys(S.colorMap).length%S.colors.length];}return S.colorMap[pid];}
+function toast(m,t='',ms=3000){const el=document.createElement('div');el.className=`toast${t?' '+t:''}`;el.textContent=m;$('toast-c').appendChild(el);setTimeout(()=>{el.style.animation='tOut .22s ease forwards';setTimeout(()=>el.remove(),240)},ms);}
+function log(html){const f=$('sfeed'),d=document.createElement('div');d.className='sitem';const t=new Date().toLocaleTimeString('id',{hour:'2-digit',minute:'2-digit',second:'2-digit'});d.innerHTML=`<span style="color:var(--muted)">[${t}]</span> ${html}`;f.appendChild(d);f.scrollTop=f.scrollHeight;while(f.children.length>80)f.removeChild(f.firstChild);}
+function save(){try{localStorage.setItem('tr168lux',JSON.stringify({name:S.name,avatar:S.avatar,lang:S.lang,bestWpm:S.bestWpm,attempts:S.attempts}))}catch(e){}}
+function load(){try{const d=JSON.parse(localStorage.getItem('tr168lux')||'null');if(d){S.name=d.name||'';S.avatar=d.avatar||'🏎️';S.lang=d.lang||'id';S.bestWpm=d.bestWpm||0;S.attempts=d.attempts||0;}}catch(e){}}
+
+// ── TABS ──────────────────────────────────────────────────────
+function switchTab(tab){
+  if(tab==='solo'){$('soloSection').style.display='block';$('multiSection').style.display='none';$('tabSolo').classList.add('active');$('tabMulti').classList.remove('active');}
+  else{$('soloSection').style.display='none';$('multiSection').style.display='block';$('tabMulti').classList.add('active');$('tabSolo').classList.remove('active');}
 }
 
-// ── WORD ENGINE ────────────────────────────────────────────────
-function initWords(text){
-  S.words=text.trim().split(/\s+/);
-  S.currentWordIdx=0;S.currentInput='';S.wrongWords=new Set();S.completedWords=0;
-}
-function calcProgress(){return Math.round((S.completedWords/S.words.length)*100);}
+// ══════════════════════════════════════════════════════════════
+//  WORD-SCROLL DISPLAY ENGINE
+//  Shows 2 rows at a time. Words scroll up when row is filled.
+//  Character-level coloring inside active word.
+// ══════════════════════════════════════════════════════════════
 
-// ── RENDER WORDS ───────────────────────────────────────────────
-function renderWords(){
-  const d=$('tdisplay');
-  if(!S.words.length){d.innerHTML='';return;}
-  d.innerHTML='';
-  S.words.forEach((word,wi)=>{
-    const span=document.createElement('span');
-    span.className='word';span.id=`word-${wi}`;
-    if(wi<S.currentWordIdx){
-      span.classList.add(S.wrongWords.has(wi)?'wrong':'done');
-      span.textContent=word;
-    } else if(wi===S.currentWordIdx){
+// We use a simple approach:
+// - Keep words as a flat array
+// - Measure which words fit in 2 rows
+// - Show a window of words, always keeping current word visible
+// - The word-row div scrolls by adjusting margin-top
+
+const LINE_H = 38; // px per row (font 22px + margin-bottom 8px + some gap) — calibrated
+
+function buildWordRowEl(words, startIdx, wi, ci, wrongSet){
+  // Create a container with all words, scrolled so current word is in row 1 or 2
+  const container = document.createElement('div');
+  container.className = 'word-row';
+
+  words.forEach((word, i)=>{
+    const idx = startIdx + i;
+    const span = document.createElement('span');
+    span.className = 'wd';
+    span.id = `wd-${idx}`;
+
+    if(idx < wi){
+      // Done
+      span.classList.add(wrongSet.has(idx) ? 'wrong' : 'done');
+      span.textContent = word;
+    } else if(idx === wi){
+      // Active — character level
       span.classList.add('active');
-      const typed=S.currentInput;
-      for(let ci=0;ci<word.length;ci++){
-        const ch=document.createElement('span');ch.className='ch';ch.textContent=word[ci];
-        if(ci<typed.length){ch.classList.add(typed[ci]===word[ci]?'ok':'bad');}
-        else if(ci===typed.length){ch.classList.add('cur');}
-        else{ch.classList.add('un');}
+      for(let ci2=0; ci2<word.length; ci2++){
+        const ch = document.createElement('span');
+        ch.textContent = word[ci2];
+        if(ci2 < ci.length){ ch.className = ci[ci2]===word[ci2] ? 'ch-ok' : 'ch-bad'; }
+        else if(ci2 === ci.length){ ch.className = 'ch-cur'; }
+        else{ ch.className = 'ch-un'; }
         span.appendChild(ch);
       }
     } else {
-      span.classList.add('pending');span.textContent=word;
+      span.classList.add('pending');
+      span.textContent = word;
     }
-    d.appendChild(span);
+    container.appendChild(span);
   });
-  const aw=document.getElementById(`word-${S.currentWordIdx}`);
-  if(aw) aw.scrollIntoView({block:'nearest',behavior:'smooth'});
+  return container;
 }
 
-// ── SMOKE EXHAUST SYSTEM ───────────────────────────────────────
-function spawnSmoke(carEl, color){
-  const track = carEl.parentElement;
-  const carLeft = parseInt(carEl.style.left)||0;
-  const smokeCount = 3;
-  for(let i=0;i<smokeCount;i++){
-    const sm = document.createElement('div');
-    sm.className = 'smoke';
-    const sz = 6 + Math.random()*10;
-    const oy = (Math.random()-.5)*20;
-    const gray = Math.floor(100+Math.random()*100);
-    sm.style.cssText = `
-      left:${carLeft-16+Math.random()*8}px;
-      top:${track.offsetHeight/2 - sz/2 + oy}px;
-      width:${sz}px;height:${sz}px;
-      background:radial-gradient(circle,rgba(${gray},${gray},${gray},0.7) 0%,rgba(${gray},${gray},${gray},0) 70%);
-      animation-delay:${i*0.08}s;
-      animation-duration:${0.9+Math.random()*0.6}s;
-    `;
-    track.appendChild(sm);
-    setTimeout(()=>sm.remove(), 1600);
+// For solo — we track word positions to know row offset
+// Simpler approach: just show 80 words around current word, offset by rows done
+
+function renderSoloDisplay(){
+  const disp = $('soloDisplay');
+  const wi = S.soloWi;
+  // Show window: current word - 10 ... + 60
+  const winStart = Math.max(0, wi - 8);
+  const winEnd = Math.min(S.soloWords.length, winStart + 80);
+  const visible = S.soloWords.slice(winStart, winEnd);
+
+  disp.innerHTML = '';
+  const row = buildWordRowEl(visible, winStart, wi, S.soloCi, S.soloWrong);
+
+  // Calculate scroll: figure out how many rows of words are "done" before current word
+  // We'll use an offscreen measurer
+  const MT = calcScrollOffset(disp, visible, winStart, wi);
+  row.style.marginTop = (-MT) + 'px';
+  row.style.paddingTop = '4px';
+  disp.appendChild(row);
+
+  // Ensure current word visible
+  const curEl = document.getElementById(`wd-${wi}`);
+  if(curEl) curEl.scrollIntoView({block:'nearest'});
+}
+
+function renderRaceDisplay(){
+  const disp = $('tdisplay');
+  if(!S.raceWords.length){disp.innerHTML='<div class="word-row" style="padding-top:4px"><span style="color:var(--muted);font-family:var(--fd);font-size:13px;letter-spacing:4px">MENUNGGU RACE DIMULAI...</span></div>';return;}
+  const wi = S.rWi;
+  const winStart = Math.max(0, wi - 8);
+  const winEnd = Math.min(S.raceWords.length, winStart + 80);
+  const visible = S.raceWords.slice(winStart, winEnd);
+
+  disp.innerHTML = '';
+  const row = buildWordRowEl(visible, winStart, wi, S.rCi, S.rWrong);
+  const MT = calcScrollOffset(disp, visible, winStart, wi);
+  row.style.marginTop = (-MT) + 'px';
+  row.style.paddingTop = '4px';
+  disp.appendChild(row);
+}
+
+// Calculate how many pixels to scroll up based on how many words are done
+// We approximate: measure word widths to figure row breaks
+// Simple approach: use a hidden measuring span
+let _measurer = null;
+function getMeasurer(){
+  if(!_measurer){_measurer=document.createElement('span');_measurer.style.cssText='position:absolute;visibility:hidden;font-family:JetBrains Mono,monospace;font-size:22px;white-space:nowrap;pointer-events:none;';document.body.appendChild(_measurer);}
+  return _measurer;
+}
+
+function calcScrollOffset(container, words, startIdx, targetWi){
+  // Get available width
+  const availW = (container.offsetWidth || 700) - 48; // minus padding
+  const m = getMeasurer();
+  let x = 0, rows = 0;
+  const WORD_GAP = 14; // margin-right in px
+
+  for(let i=0; i<words.length; i++){
+    const idx = startIdx + i;
+    if(idx >= targetWi) break; // stop at current word — don't scroll past
+
+    m.textContent = words[i];
+    const w = m.offsetWidth + WORD_GAP;
+
+    if(x + w > availW && x > 0){
+      rows++;
+      x = w;
+    } else {
+      x += w;
+    }
   }
+
+  // Each row is LINE_H px. We want to show from row where current word is.
+  // Scroll so that completed rows above are hidden — but keep 0 rows above (always show from top of current row)
+  const scrollRows = Math.max(0, rows - 0); // show current row at top
+  return scrollRows * LINE_H;
 }
 
-function spawnSparks(carEl){
-  const track = carEl.parentElement;
-  const carLeft = parseInt(carEl.style.left)||0;
-  const trackH = track.offsetHeight;
-  for(let i=0;i<5;i++){
-    const sp = document.createElement('div');
-    sp.className='spark';
-    const colors=['#FFD700','#FF8800','#FF4400','#FFFF00','#FF9500'];
-    const c=colors[Math.floor(Math.random()*colors.length)];
-    const sx=(Math.random()-.5)*60+'px';
-    const sy=(-20-Math.random()*30)+'px';
-    sp.style.cssText=`
-      left:${carLeft}px;top:${trackH*0.6}px;
-      width:3px;height:3px;border-radius:50%;background:${c};
-      box-shadow:0 0 4px ${c};
-      --sx:${sx};--sy:${sy};
-      animation-delay:${i*0.05}s;
-    `;
-    track.appendChild(sp);
-    setTimeout(()=>sp.remove(),700);
-  }
-}
 
-function spawnSpeedLines(track, carLeft){
-  const h = track.offsetHeight;
-  for(let i=0;i<4;i++){
-    const ln=document.createElement('div');
-    ln.className='speedline';
-    const w=20+Math.random()*50;
-    const y=8+Math.random()*(h-16);
-    ln.style.cssText=`left:${carLeft-w-5}px;top:${y}px;width:${w}px;background:rgba(255,215,0,${0.15+Math.random()*0.3});`;
-    track.appendChild(ln);
-    setTimeout(()=>ln.remove(),500);
-  }
-}
-
-// ── PEER JS ────────────────────────────────────────────────────
-function initPeer(){
-  try{S.peer=new Peer({debug:0,config:{iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun1.l.google.com:19302'}]}});}
-  catch(ex){log('<span class="rd">PeerJS gagal load.</span>');return;}
-  S.peer.on('open',id=>{
-    S.peerId=id;save();$('myPeerId').textContent=id;
-    setConn('ok','Siap — ID: '+id);
-    log(`🌐 Peer ID: <span class="hl">${id}</span>`);
-    S.peer.on('connection',conn=>{
-      if(!S.isHost) return;
-      conn.on('open',()=>hostOnConn(conn));
-      conn.on('error',()=>{});
-    });
-    checkUrlRoom();
-  });
-  S.peer.on('error',e=>{
-    setConn('bad','Error: '+e.type);
-    if(e.type==='peer-unavailable') toast('Host tidak ditemukan!','er');
-    else log(`<span class="rd">Peer error: ${e.type}</span>`);
-  });
-  S.peer.on('disconnected',()=>{setConn('mid','Reconnect...');try{S.peer.reconnect()}catch(e){}});
-}
-
-function setConn(t,m){$('connDot').className=`conn-dot ${t}`;$('connText').textContent=m;}
-$('myPeerId').addEventListener('click',()=>{
-  navigator.clipboard?.writeText(S.peerId).then(()=>toast('Peer ID disalin!','ok')).catch(()=>{});
+// ══════════════════════════════════════════════════════════════
+//  SOLO PRACTICE
+// ══════════════════════════════════════════════════════════════
+$('btnSoloStart').addEventListener('click',()=>{
+  $('soloHome').style.display='none';$('soloArea').style.display='block';
+  startSoloSession();
 });
 
-// ── HOST LOGIC ─────────────────────────────────────────────────
-function hostOnConn(conn){
-  const pid=conn.peer;S.conns[pid]=conn;
-  conn.on('data',d=>hostRecv(pid,d));
-  conn.on('close',()=>{
-    const nm=S.players[pid]?.name||S.specs[pid]?.name||pid;
-    log(`👋 <span class="hl">${nm}</span> terputus`);
-    delete S.conns[pid];delete S.players[pid];delete S.specs[pid];delete S.colorMap[pid];
-    bcastState();renderLobby();renderTrack();
-  });
-  setTimeout(()=>sendTo(conn,{type:'WELCOME',state:mkState()}),200);
+function startSoloSession(){
+  S.soloOn=false;S.soloDone=false;S.soloSec=60;S.soloStartTime=null;
+  clearInterval(S.soloTimerIv);clearInterval(S.soloSegIv);
+  S.soloWords=buildWordStream(S.lang,300);
+  S.soloWi=0;S.soloCi='';S.soloWrong=new Set();S.soloDone2=0;
+  S.soloCorrectChars=0;S.soloTotalChars=0;S.soloStreak=0;S.soloMaxStreak=0;S.soloWpmHist=[];S.soloWpm=0;
+  $('soloInput').value='';$('soloInput').disabled=false;
+  $('soloResult').classList.remove('show');
+  $('soloWpm').textContent='0';$('soloAcc').textContent='100%';$('soloKpm').textContent='0';$('soloStreak').textContent='0';
+  $('soloPbar').style.width='0%';
+  updateTimerRing(60,60);$('timerNum').textContent='60';$('timerNum').className='timer-num t-normal';
+  $('soloBox').className='typing-window';
+  $('wpmGraph').innerHTML='';
+  renderSoloDisplay();
+  setTimeout(()=>$('soloInput').focus(),100);
 }
 
-function hostRecv(pid,d){
-  switch(d.type){
-    case'JOIN':
-      if(d.asSpec){S.specs[pid]={id:pid,name:d.name,avatar:d.avatar};log(`👁 <span class="hl">${d.name}</span> menonton`);}
-      else{S.players[pid]={id:pid,name:d.name,avatar:d.avatar,ready:false,prog:0,wpm:0,done:false,finishTime:null};log(`👤 <span class="hl">${d.name}</span> bergabung`);}
-      bcastState();renderLobby();renderTrack();break;
-    case'READY':
-      if(S.players[pid]) S.players[pid].ready=d.ready;bcastState();renderLobby();break;
-    case'PROGRESS':
-      if(S.players[pid]){S.players[pid].prog=d.prog;S.players[pid].wpm=d.wpm;}bcastState();renderTrack();break;
-    case'FINISHED':
-      if(S.players[pid]){S.players[pid].done=true;S.players[pid].finishTime=d.finishTime;S.players[pid].wpm=d.wpm;S.players[pid].prog=100;log(`🏁 <span class="gd">${S.players[pid].name}</span> selesai! WPM: ${d.wpm}`);}
-      bcastState();checkAllDone();break;
-  }
+function startSoloTimer(){
+  if(S.soloOn)return;S.soloOn=true;S.soloStartTime=Date.now();
+  $('soloBox').className='typing-window active-cyan';
+  S.soloSegIv=setInterval(()=>{if(!S.soloOn||S.soloDone)return;S.soloWpmHist.push(S.soloWpm||0);updateWpmGraph();},5000);
+  S.soloTimerIv=setInterval(()=>{
+    if(!S.soloOn||S.soloDone)return;
+    const elapsed=(Date.now()-S.soloStartTime)/1000;
+    const rem=Math.max(0,60-elapsed);
+    const rr=Math.ceil(rem);
+    $('timerNum').textContent=rr;
+    updateTimerRing(rem,60);
+    if(rr<=10)$('timerNum').className='timer-num t-danger';
+    else if(rr<=20)$('timerNum').className='timer-num t-warn';
+    else $('timerNum').className='timer-num t-normal';
+    updateSoloStats();
+    if(rem<=0)finishSolo();
+  },100);
 }
 
-function checkAllDone(){
-  const pls=Object.values(S.players);
-  if(pls.length>0&&pls.every(p=>p.done)){
-    S.raceStatus='finished';const lb=mkLeaderboard();bcastMsg({type:'RACE_OVER',players:lb});bcastState();showResult(lb);
+function updateTimerRing(rem,total){
+  const circ=326.73,off=circ*(1-rem/total);
+  const ring=$('timerRing');ring.style.strokeDashoffset=off;
+  const pct=rem/total;ring.style.stroke=pct>.5?'var(--cyan)':pct>.25?'var(--gold)':'var(--red)';
+}
+
+function updateSoloStats(){
+  if(!S.soloStartTime)return;
+  const el=(Date.now()-S.soloStartTime)/1000;
+  S.soloWpm=el>0?Math.round((S.soloDone2/el)*60):0;
+  const kpm=el>0?Math.round((S.soloCorrectChars/el)*60):0;
+  const acc=S.soloTotalChars>0?Math.round((S.soloCorrectChars/S.soloTotalChars)*100):100;
+  $('soloWpm').textContent=S.soloWpm;$('soloAcc').textContent=acc+'%';
+  $('soloKpm').textContent=kpm;$('soloStreak').textContent=S.soloStreak;
+  const prog=Math.min(100,Math.round((S.soloWi/S.soloWords.length)*100));
+  $('soloPbar').style.width=prog+'%';
+}
+
+function updateWpmGraph(){
+  const g=$('wpmGraph');g.innerHTML='';
+  const max=Math.max(...S.soloWpmHist,1);
+  S.soloWpmHist.forEach(v=>{const b=document.createElement('div');b.className='wpm-bar';b.style.height=Math.max(3,Math.round((v/max)*40))+'px';b.title=v+' WPM';g.appendChild(b);});
+}
+
+$('soloInput').addEventListener('keydown',e=>{
+  if(S.soloDone)return;
+  if(!S.soloOn&&e.key.length===1)startSoloTimer();
+  if(e.key===' '){
+    e.preventDefault();
+    const typed=$('soloInput').value.trim();if(!typed)return;
+    // Ensure enough words
+    if(S.soloWi>=S.soloWords.length-20)S.soloWords.push(...buildWordStream(S.lang,100));
+    const cw=S.soloWords[S.soloWi];const ok=typed===cw;
+    if(!ok){S.soloWrong.add(S.soloWi);S.soloStreak=0;$('soloBox').classList.add('err');setTimeout(()=>$('soloBox').classList.remove('err'),200);}
+    else{S.soloStreak++;if(S.soloStreak>S.soloMaxStreak)S.soloMaxStreak=S.soloStreak;}
+    S.soloTotalChars+=cw.length;if(ok)S.soloCorrectChars+=cw.length;
+    S.soloWi++;S.soloDone2=S.soloWi;S.soloCi='';$('soloInput').value='';
+    updateSoloStats();renderSoloDisplay();return;
   }
+  if(e.key==='Backspace'){setTimeout(()=>{S.soloCi=$('soloInput').value;renderSoloDisplay();},0);}
+});
+$('soloInput').addEventListener('input',()=>{
+  if(S.soloDone)return;
+  let v=$('soloInput').value.replace(/ /g,'');if($('soloInput').value!==v)$('soloInput').value=v;
+  S.soloCi=v;if(!S.soloOn&&v.length>0)startSoloTimer();
+  renderSoloDisplay();updateSoloStats();
+});
+
+function finishSolo(){
+  if(S.soloDone)return;S.soloDone=true;S.soloOn=false;
+  clearInterval(S.soloTimerIv);clearInterval(S.soloSegIv);
+  $('soloInput').disabled=true;$('soloInput').value='';
+  S.soloWpmHist.push(S.soloWpm||0);updateWpmGraph();
+  const fw=S.soloWpm||0;
+  const acc=S.soloTotalChars>0?Math.round((S.soloCorrectChars/S.soloTotalChars)*100):100;
+  const correctWords=S.soloDone2-S.soloWrong.size;
+  S.attempts++;if(fw>S.bestWpm)S.bestWpm=fw;
+  $('bestWpmDisplay').textContent=S.bestWpm||'—';$('attemptDisplay').textContent=S.attempts;
+  save();
+  $('resWpmBig').textContent=fw;$('resAcc').textContent=acc+'%';$('resKpm').textContent=S.soloCorrectChars;$('resWords').textContent=correctWords;
+  $('ratingStars').textContent=getRating(fw);
+  $('resCrown').textContent=fw>=80?'🏆':fw>=50?'🥇':fw>=30?'🥈':'🎯';
+  $('soloResult').classList.add('show');
+  log(`⏱ Solo selesai — WPM: <span class="gd">${fw}</span> | Akurasi: ${acc}%`);
+  toast(`✓ Selesai! ${fw} WPM · ${acc}% akurasi`,'gd',4000);
 }
-function mkLeaderboard(){
-  return Object.values(S.players).sort((a,b)=>{
-    if(a.done&&b.done) return a.finishTime-b.finishTime;
-    if(a.done) return -1;if(b.done) return 1;return b.prog-a.prog;
-  });
+
+function getRating(w){if(w>=100)return'⭐⭐⭐⭐⭐';if(w>=80)return'⭐⭐⭐⭐';if(w>=60)return'⭐⭐⭐';if(w>=40)return'⭐⭐';return'⭐';}
+$('btnSoloRestart').addEventListener('click',startSoloSession);
+$('btnSoloExit').addEventListener('click',()=>{clearInterval(S.soloTimerIv);clearInterval(S.soloSegIv);S.soloOn=false;S.soloDone=false;$('soloArea').style.display='none';$('soloHome').style.display='block';$('bestWpmDisplay').textContent=S.bestWpm||'—';$('attemptDisplay').textContent=S.attempts;});
+$('btnSoloAgain').addEventListener('click',startSoloSession);
+$('btnSoloShare').addEventListener('click',()=>{const msg=`TypeRace ALHACKER168\n⌨ WPM: ${$('resWpmBig').textContent}\n✓ Akurasi: ${$('resAcc').textContent}\n${getRating(parseInt($('resWpmBig').textContent))}\n${window.location.href}`;navigator.clipboard?.writeText(msg).then(()=>toast('Hasil disalin!','ok')).catch(()=>toast('WPM: '+$('resWpmBig').textContent,'gd'));});
+
+// ── AVATAR ────────────────────────────────────────────────────
+document.querySelectorAll('.car-opt').forEach(el=>{el.addEventListener('click',()=>{document.querySelectorAll('.car-opt').forEach(x=>x.classList.remove('sel'));el.classList.add('sel');S.avatar=el.dataset.e;});});
+document.querySelector('.car-opt')?.click();
+
+// ── SETUP ─────────────────────────────────────────────────────
+$('btnEnter').addEventListener('click',()=>{const n=$('inpName').value.trim();if(!n){toast('Masukkan nama!','er');return;}S.name=n;save();$('hdrName').textContent=`${S.avatar} ${S.name}`;$('setupModal').style.display='none';log(`👋 <span class="hl">${S.name}</span> masuk arena`);});
+$('inpName').addEventListener('keydown',e=>{if(e.key==='Enter')$('btnEnter').click();});
+$('btnChangeName').addEventListener('click',()=>{$('inpName').value=S.name;$('setupModal').style.display='flex';});
+$('langSel').addEventListener('change',e=>{S.lang=e.target.value;save();if(S.soloOn||(!S.soloOn&&$('soloArea').style.display!=='none'))startSoloSession();});
+
+// ══════════════════════════════════════════════════════════════
+//  PEER JS / MULTIPLAYER
+// ══════════════════════════════════════════════════════════════
+function initPeer(){
+  try{S.peer=new Peer({debug:0,config:{iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun1.l.google.com:19302'}]}});}catch(ex){log('<span class="rd">PeerJS gagal load.</span>');return;}
+  S.peer.on('open',id=>{S.peerId=id;save();$('myPeerId').textContent=id;setConn('ok','Siap — ID: '+id);log(`🌐 Peer ID: <span class="hl">${id}</span>`);S.peer.on('connection',conn=>{if(!S.isHost)return;conn.on('open',()=>hostOnConn(conn));conn.on('error',()=>{});});checkUrlRoom();});
+  S.peer.on('error',e=>{setConn('bad','Error: '+e.type);if(e.type==='peer-unavailable')toast('Host tidak ditemukan!','er');});
+  S.peer.on('disconnected',()=>{setConn('mid','Reconnect...');try{S.peer.reconnect()}catch(e){}});
 }
-function mkState(){
-  return{roomName:S.roomName,hostId:S.peerId,maxPlayers:S.maxPlayers,status:S.raceStatus,text:S.text,lang:S.lang,players:S.players,specs:S.specs};
-}
+function setConn(t,m){$('connDot').className=`conn-dot ${t}`;$('connText').textContent=m;}
+$('myPeerId').addEventListener('click',()=>navigator.clipboard?.writeText(S.peerId).then(()=>toast('Peer ID disalin!','ok')).catch(()=>{}));
+
+function hostOnConn(conn){const pid=conn.peer;S.conns[pid]=conn;conn.on('data',d=>hostRecv(pid,d));conn.on('close',()=>{const nm=S.players[pid]?.name||S.specs[pid]?.name||pid;log(`👋 <span class="hl">${nm}</span> terputus`);delete S.conns[pid];delete S.players[pid];delete S.specs[pid];delete S.colorMap[pid];bcastState();renderLobby();renderTrack();});setTimeout(()=>sendTo(conn,{type:'WELCOME',state:mkState()}),200);}
+function hostRecv(pid,d){switch(d.type){case'JOIN':if(d.asSpec){S.specs[pid]={id:pid,name:d.name,avatar:d.avatar};}else{S.players[pid]={id:pid,name:d.name,avatar:d.avatar,ready:false,prog:0,wpm:0,done:false,finishTime:null};}log(`${d.asSpec?'👁':'👤'} <span class="hl">${d.name}</span> ${d.asSpec?'menonton':'bergabung'}`);bcastState();renderLobby();renderTrack();break;case'READY':if(S.players[pid])S.players[pid].ready=d.ready;bcastState();renderLobby();break;case'PROGRESS':if(S.players[pid]){S.players[pid].prog=d.prog;S.players[pid].wpm=d.wpm;}bcastState();renderTrack();break;case'FINISHED':if(S.players[pid]){S.players[pid].done=true;S.players[pid].finishTime=d.finishTime;S.players[pid].wpm=d.wpm;S.players[pid].prog=100;log(`🏁 <span class="gd">${S.players[pid].name}</span> selesai! WPM: ${d.wpm}`);}bcastState();checkAllDone();break;}}
+function checkAllDone(){const pls=Object.values(S.players);if(pls.length>0&&pls.every(p=>p.done)){S.raceStatus='finished';const lb=mkLb();bcastMsg({type:'RACE_OVER',players:lb});bcastState();showResult(lb);}}
+function mkLb(){return Object.values(S.players).sort((a,b)=>{if(a.done&&b.done)return a.finishTime-b.finishTime;if(a.done)return -1;if(b.done)return 1;return b.prog-a.prog;});}
+function mkState(){return{roomName:S.roomName,hostId:S.peerId,maxPlayers:S.maxPlayers,status:S.raceStatus,text:S.text,lang:S.lang,players:S.players,specs:S.specs};}
 function bcastMsg(msg){Object.values(S.conns).forEach(c=>sendTo(c,msg));}
 function bcastState(){bcastMsg({type:'STATE',state:mkState()});}
 function sendTo(conn,msg){try{conn.send(msg)}catch(e){}}
 
-// ── CLIENT LOGIC ───────────────────────────────────────────────
-function connectToHost(hostId){
-  if(!S.peer||!S.peerId){toast('Peer belum siap!','er');return}
-  setConn('mid','Menghubungkan...');
-  const conn=S.peer.connect(hostId,{reliable:true});
-  conn.on('open',()=>{S.hostConn=conn;setConn('ok','Terhubung!');log(`🔗 Terhubung ke <span class="hl">${hostId}</span>`);});
-  conn.on('data',d=>clientRecv(d));
-  conn.on('close',()=>{setConn('bad','Putus');toast('Host terputus!','er');if($('raceArea').style.display!=='none')leaveRoom(true);});
-  conn.on('error',()=>toast('Gagal konek','er'));
-}
+function connectToHost(hostId){if(!S.peer||!S.peerId){toast('Peer belum siap!','er');return;}setConn('mid','Menghubungkan...');const conn=S.peer.connect(hostId,{reliable:true});conn.on('open',()=>{S.hostConn=conn;setConn('ok','Terhubung!');log(`🔗 Terhubung ke <span class="hl">${hostId}</span>`);});conn.on('data',d=>clientRecv(d));conn.on('close',()=>{setConn('bad','Putus');toast('Host terputus!','er');if($('raceArea').style.display!=='none')leaveRoom(true);});conn.on('error',()=>toast('Gagal konek','er'));}
+function clientRecv(d){switch(d.type){case'WELCOME':applyState(d.state);const pCount=Object.keys(d.state.players||{}).length;S.isSpec=d.state.status==='playing'||pCount>=(d.state.maxPlayers||4);S.hostConn.send({type:'JOIN',name:S.name,avatar:S.avatar,asSpec:S.isSpec});showRaceArea(d.state.roomName||d.state.hostId,d.state.hostId);if(S.isSpec)toast('Bergabung sebagai penonton','gd');break;case'STATE':applyState(d.state);break;case'COUNTDOWN':doCountdown(d.sec,null);break;case'START':S.text=d.text;actualStartRace(d.text);break;case'RACE_OVER':showResult(d.players);break;case'RESET':resetRaceUI();break;}}
+function applyState(st){if(!st)return;S.players=st.players||{};S.specs=st.specs||{};S.raceStatus=st.status;if(st.text)S.text=st.text;renderLobby();renderTrack();updateStatusBadge(st.status);}
 
-function clientRecv(d){
-  switch(d.type){
-    case'WELCOME':
-      applyState(d.state);
-      const pCount=Object.keys(d.state.players||{}).length;
-      S.isSpec=d.state.status==='playing'||pCount>=(d.state.maxPlayers||4);
-      S.hostConn.send({type:'JOIN',name:S.name,avatar:S.avatar,asSpec:S.isSpec});
-      showRaceArea(d.state.roomName||d.state.hostId,d.state.hostId);
-      if(S.isSpec) toast('Bergabung sebagai penonton','gd');break;
-    case'STATE':applyState(d.state);break;
-    case'COUNTDOWN':doCountdown(d.sec,null);break;
-    case'START':S.text=d.text;actualStartRace();break;
-    case'RACE_OVER':showResult(d.players);break;
-    case'RESET':resetRaceUI();break;
-  }
-}
-function applyState(st){
-  if(!st) return;
-  S.players=st.players||{};S.specs=st.specs||{};S.raceStatus=st.status;
-  if(st.text) S.text=st.text;
-  renderLobby();renderTrack();updateStatusBadge(st.status);
-}
+$('btnCreate').addEventListener('click',()=>{if(!S.name){toast('Setup nama dulu!','er');return;}if(!S.peerId){toast('Koneksi belum siap!','er');return;}S.isHost=true;S.roomName=$('inpRoomName').value.trim()||`Room-${uid(4)}`;S.maxPlayers=parseInt($('selMax').value)||4;S.text=buildWordStream(S.lang,100).join(' ');S.raceStatus='waiting';S.players[S.peerId]={id:S.peerId,name:S.name,avatar:S.avatar,ready:true,prog:0,wpm:0,done:false,finishTime:null};showRaceArea(S.roomName,S.peerId);log(`🚪 Room <span class="hl">${S.roomName}</span> | ID: <span class="gd">${S.peerId}</span>`);toast('Room dibuat! Share ID ke teman','ok');});
+$('btnJoin').addEventListener('click',()=>{const code=$('inpJoinCode').value.trim();if(!code){toast('Masukkan ID host!','er');return;}if(!S.name){toast('Setup nama dulu!','er');return;}if(!S.peerId){toast('Koneksi belum siap!','er');return;}S.isHost=false;S.raceStatus='waiting';showRaceArea('Menghubungkan...',code);connectToHost(code);});
 
-// ── AVATAR ─────────────────────────────────────────────────────
-document.querySelectorAll('.avopt').forEach(el=>{
-  el.addEventListener('click',()=>{
-    document.querySelectorAll('.avopt').forEach(x=>x.classList.remove('sel'));
-    el.classList.add('sel');S.avatar=el.dataset.e;
-  });
-});
-document.querySelector('.avopt')?.click();
+function showRaceArea(name,code){$('homeSection').style.display='none';$('raceArea').style.display='block';$('raceInfo').textContent=`${name} · ID: ${code}`;$('codeSpan').textContent=code;if(S.isSpec)$('specBar').classList.add('show');else{$('btnReady').style.display='block';if(S.isHost){$('btnStart').style.display='block';$('btnStart').disabled=false;}}const ti=TOD_INFO[TOD];const tEl=$('todLabel');tEl.textContent=ti.label;tEl.style.color=ti.color;tEl.style.borderColor=ti.color.replace('.9)','.3)');renderLobby();renderTrack();}
 
-// ── SETUP ──────────────────────────────────────────────────────
-$('btnEnter').addEventListener('click',()=>{
-  const n=$('inpName').value.trim();
-  if(!n){toast('Masukkan nama!','er');return}
-  S.name=n;save();
-  $('hdrName').textContent=`${S.avatar} ${S.name}`;
-  $('setupModal').style.display='none';
-  log(`👋 <span class="hl">${S.name}</span> masuk arena`);
-});
-$('inpName').addEventListener('keydown',e=>{if(e.key==='Enter')$('btnEnter').click()});
-$('btnChangeName').addEventListener('click',()=>{$('inpName').value=S.name;$('setupModal').style.display='flex';});
-$('langSel').addEventListener('change',e=>{S.lang=e.target.value;save();});
+$('codeBadge').addEventListener('click',()=>{const id=$('codeSpan').textContent;const link=window.location.origin+window.location.pathname+'?room='+id;navigator.clipboard?.writeText(link).then(()=>toast('Link disalin! Share ke teman','ok')).catch(()=>toast('ID: '+id,'gd'));});
 
-// ── CREATE ROOM ────────────────────────────────────────────────
-$('btnCreate').addEventListener('click',()=>{
-  if(!S.name){toast('Setup nama dulu!','er');return}
-  if(!S.peerId){toast('Koneksi belum siap!','er');return}
-  S.isHost=true;
-  S.roomName=$('inpRoomName').value.trim()||`Room-${uid(4)}`;
-  S.maxPlayers=parseInt($('selMax').value)||4;
-  S.text=randText(S.lang);S.raceStatus='waiting';
-  S.players[S.peerId]={id:S.peerId,name:S.name,avatar:S.avatar,ready:true,prog:0,wpm:0,done:false,finishTime:null};
-  showRaceArea(S.roomName,S.peerId);
-  log(`🚪 Room <span class="hl">${S.roomName}</span> | ID: <span class="gd">${S.peerId}</span>`);
-  toast('Room dibuat! Share ID ke teman','ok');
-});
+function renderLobby(){const pl=$('playerList');pl.innerHTML='';Object.values(S.players).forEach(p=>{const c=getColor(p.id);const isme=p.id===S.peerId;const ishost=S.isHost&&p.id===S.peerId;const el=document.createElement('div');el.className=`pcard${p.ready?' ready':''}${ishost?' ishost':''}${isme?' isme':''}`;el.innerHTML=`<div class="pav" style="background:${c}18;border:1.5px solid ${c}44">${p.avatar}</div><div class="pinfo"><div class="pinfo-name" style="color:${isme?'var(--g2)':c}">${p.name}${isme?' (Kamu)':''}</div><div class="pinfo-status ${p.ready?'s-ready':ishost?'s-host':'s-wait'}">${ishost?'👑 HOST':p.ready?'✓ SIAP':'○ Menunggu'}</div></div>`;pl.appendChild(el);});const sl=$('specList');sl.innerHTML='';Object.values(S.specs).forEach(s=>{const t=document.createElement('div');t.className='stag';t.textContent=`👁 ${s.name}`;sl.appendChild(t);});}
 
-// ── JOIN ROOM ──────────────────────────────────────────────────
-$('btnJoin').addEventListener('click',()=>{
-  const code=$('inpJoinCode').value.trim();
-  if(!code){toast('Masukkan ID host!','er');return}
-  if(!S.name){toast('Setup nama dulu!','er');return}
-  if(!S.peerId){toast('Koneksi belum siap!','er');return}
-  S.isHost=false;S.raceStatus='waiting';
-  showRaceArea('Menghubungkan...',code);connectToHost(code);
-  log(`🔗 Join: <span class="hl">${code}</span>`);
-});
-
-// ── SHOW RACE AREA ─────────────────────────────────────────────
-function showRaceArea(name,code){
-  $('homeSection').style.display='none';$('raceArea').style.display='block';
-  $('raceInfo').textContent=`${name} | ID: ${code}`;$('codeSpan').textContent=code;
-  if(S.isSpec){$('specBar').classList.add('show');}
-  else{$('btnReady').style.display='block';if(S.isHost){$('btnStart').style.display='block';$('btnStart').disabled=false;}}
-  // Update time of day label
-  const tod=getTodLabel();
-  const todEl=$('todLabel');
-  todEl.textContent=tod.label;todEl.style.color=tod.color;todEl.style.borderColor=tod.color.replace('.8)','.3)');
-  renderLobby();renderTrack();
-}
-
-$('codeBadge').addEventListener('click',()=>{
-  const id=$('codeSpan').textContent;
-  const link=window.location.origin+window.location.pathname+'?room='+id;
-  navigator.clipboard?.writeText(link).then(()=>toast('Link disalin! Share ke teman','ok')).catch(()=>toast('ID: '+id,'gd'));
-});
-
-// ── RENDER LOBBY ───────────────────────────────────────────────
-function renderLobby(){
-  const pl=$('playerList');pl.innerHTML='';
-  Object.values(S.players).forEach(p=>{
-    const c=getColor(p.id);const isme=p.id===S.peerId;const ishost=S.isHost&&p.id===S.peerId;
-    const el=document.createElement('div');
-    el.className=`pcard${p.ready?' ready':''}${ishost?' ishost':''}${isme?' isme':''}`;
-    el.innerHTML=`<div class="pav" style="background:${c}1A;border:1.5px solid ${c}55">${p.avatar}</div>
-      <div class="pinfo">
-        <div class="pinfo-name" style="color:${isme?'var(--g)':c}">${p.name}${isme?' (Kamu)':''}</div>
-        <div class="pinfo-status ${p.ready?'s-ready':ishost?'s-host':'s-wait'}">${ishost?'👑 HOST':p.ready?'✓ SIAP':'○ Menunggu'}</div>
-      </div>`;
-    pl.appendChild(el);
-  });
-  const sl=$('specList');sl.innerHTML='';
-  Object.values(S.specs).forEach(s=>{const t=document.createElement('div');t.className='stag';t.textContent=`👁 ${s.name}`;sl.appendChild(t);});
-}
-
-// ── RENDER TRACK ───────────────────────────────────────────────
-const todClass = getTimeOfDay();
-let lastSmokeTick = {};
-
+// ── TRACK ─────────────────────────────────────────────────────
+let smokeTick={};
 function renderTrack(){
-  const tl=$('trackList');
-  const pls=Object.values(S.players).sort((a,b)=>b.prog-a.prog);
-  const IDS=new Set(pls.map(p=>p.id));
-  Array.from(tl.children).forEach(el=>{const pid=el.id?.slice(2);if(pid&&!IDS.has(pid))el.remove();});
-
+  const tl=$('trackList');const pls=Object.values(S.players).sort((a,b)=>b.prog-a.prog);const IDS=new Set(pls.map(p=>p.id));
+  Array.from(tl.children).forEach(el=>{if(el.dataset.pid&&!IDS.has(el.dataset.pid))el.remove();});
   pls.forEach(p=>{
-    const c=getColor(p.id);const isme=p.id===S.peerId;
-    let tr=document.getElementById(`t-${p.id}`);
-    if(!tr){
-      tr=document.createElement('div');tr.className=`track ${todClass}`;tr.id=`t-${p.id}`;
-      tr.innerHTML=`
-        <div class="track-bg"></div>
-        <div class="track-road"></div>
-        <div class="tfill" id="f-${p.id}" style="background:${c}"></div>
-        <div class="tfinish"></div>
-        <div class="tcar${isme?' mine':''}" id="c-${p.id}" style="left:28px">${p.avatar||'🏎️'}</div>
-        <div class="tpinfo">
-          <span class="tpname" style="color:${c}">${p.name}${isme?' ★':''}</span>
-          <span class="twpm" id="w-${p.id}">0 WPM</span>
-          <span class="tprog" id="pg-${p.id}">0%</span>
-        </div>`;
-      tl.appendChild(tr);
-    }
-
+    const c=getColor(p.id);const isme=p.id===S.peerId;const ti=TOD_INFO[TOD];
+    let tr=document.getElementById(`tr-${p.id}`);
+    if(!tr){tr=document.createElement('div');tr.className='track-row';tr.id=`tr-${p.id}`;tr.dataset.pid=p.id;
+      tr.innerHTML=`<div class="${ti.sky}" style="position:absolute;inset:0;border-radius:12px"></div><div class="road-layer ${ti.road}"></div>${ti.deco}<div class="track-fill" id="tf-${p.id}" style="background:${c}"></div><div class="finish-line"></div><div class="finish-flag">🏁</div><div class="car-wrap${isme?' mine':''}" id="cw-${p.id}" style="left:34px;top:52%"><div class="car-body" id="cb-${p.id}">${p.avatar||'🏎️'}</div><div class="car-shadow"></div><div class="brake-light" id="bl-${p.id}"></div>${TOD==='night'?'<div class="headlight"></div>':''}</div><div class="player-label"><span class="pl-name" style="color:${c}">${p.name}${isme?' ★':''}</span><span class="pl-wpm" id="pw-${p.id}">0 WPM</span><span class="pl-pct" id="pp-${p.id}">0%</span></div>`;
+      tl.appendChild(tr);}
     const pct=Math.min(100,p.prog||0);
-    const fill=document.getElementById(`f-${p.id}`);
-    const car=document.getElementById(`c-${p.id}`);
-    const wpmEl=document.getElementById(`w-${p.id}`);
-    const progEl=document.getElementById(`pg-${p.id}`);
-
-    if(fill) fill.style.width=pct+'%';
-    if(wpmEl) wpmEl.textContent=(p.wpm||0)+' WPM';
-    if(progEl) progEl.textContent=pct+'%';
-
-    if(car){
-      requestAnimationFrame(()=>{
-        const finishX=tr.offsetWidth-14;
-        const startX=28;
-        let newLeft;
-        if(pct>=100){
-          newLeft=finishX;
-          if(!car.classList.contains('finished')){
-            car.classList.add('finished');
-            setTimeout(()=>car.classList.remove('finished'),800);
-          }
-        } else {
-          newLeft=startX+(pct/100)*(finishX-startX-35);
-        }
-        const prevLeft=parseInt(car.style.left)||startX;
-        car.style.left=newLeft+'px';
-
-        // Exhaust smoke — for all players
-        const now=Date.now();
-        if(newLeft>prevLeft+3 && S.raceOn){
-          if(!lastSmokeTick[p.id]||now-lastSmokeTick[p.id]>120){
-            spawnSmoke(car,c);
-            lastSmokeTick[p.id]=now;
-          }
-          if(newLeft>prevLeft+12){
-            spawnSpeedLines(tr,newLeft);
-            if(Math.random()<0.3) spawnSparks(car);
-          }
-        }
-      });
-    }
+    const fill=document.getElementById(`tf-${p.id}`);const car=document.getElementById(`cw-${p.id}`);const wpmEl=document.getElementById(`pw-${p.id}`);const pctEl=document.getElementById(`pp-${p.id}`);const blEl=document.getElementById(`bl-${p.id}`);
+    if(fill)fill.style.width=pct+'%';if(wpmEl)wpmEl.textContent=(p.wpm||0)+' WPM';if(pctEl)pctEl.textContent=pct+'%';
+    if(car){requestAnimationFrame(()=>{const W=tr.offsetWidth||600;const sX=34,fX=W-18;let nL=pct>=100?fX:sX+(pct/100)*(fX-sX-45);const pL=parseInt(car.style.left)||sX;car.style.left=nL+'px';if(pct>=100&&!car.classList.contains('finished')){car.classList.add('finished');setTimeout(()=>car.classList.remove('finished'),900);}const now=Date.now();if(nL>pL+2&&S.raceOn){if(!smokeTick[p.id]||now-smokeTick[p.id]>100){spawnEx(car,c);smokeTick[p.id]=now;}if(nL>pL+9){spawnSL(tr,nL);if(Math.random()<.25)spawnSp(car);}car.classList.add('boosting');setTimeout(()=>car.classList.remove('boosting'),200);}else if(blEl){blEl.classList.toggle('on',nL<=pL&&pct>5&&S.raceOn);}});}
   });
 }
+function spawnEx(carEl,color){const tr=carEl.parentElement;const x=parseInt(carEl.style.left)||0;for(let i=0;i<3;i++){const ex=document.createElement('div');ex.className='exhaust';const sz=4+Math.random()*8;const g=Math.floor(80+Math.random()*80);ex.style.cssText=`left:${x-12+Math.random()*5}px;top:${tr.offsetHeight*.5-sz/2+(Math.random()-.5)*10}px;width:${sz}px;height:${sz}px;background:radial-gradient(circle,rgba(${g},${g},${g},.7) 0%,transparent 70%);animation-delay:${i*.07}s;animation-duration:${.7+Math.random()*.45}s;`;tr.appendChild(ex);setTimeout(()=>ex.remove(),1200);}}
+function spawnSp(carEl){const tr=carEl.parentElement;const x=parseInt(carEl.style.left)||0;for(let i=0;i<4;i++){const sp=document.createElement('div');sp.className='spark-p';const c=['#FFD700','#FF8800','#FF4400','#FFFF44'][Math.floor(Math.random()*4)];sp.style.cssText=`left:${x}px;top:${tr.offsetHeight*.55}px;background:${c};box-shadow:0 0 4px ${c};--sx:${(Math.random()-.5)*55}px;--sy:${(-14-Math.random()*24)}px;animation-delay:${i*.04}s;`;tr.appendChild(sp);setTimeout(()=>sp.remove(),600);}}
+function spawnSL(tr,x){const h=tr.offsetHeight;for(let i=0;i<3;i++){const sl=document.createElement('div');sl.className='sline';const w=16+Math.random()*40;const y=5+Math.random()*(h-10);sl.style.cssText=`left:${x-w-3}px;top:${y}px;width:${w}px;background:rgba(255,215,0,${.12+Math.random()*.22});`;tr.appendChild(sl);setTimeout(()=>sl.remove(),420);}}
 
-function updateStatusBadge(status){
-  const b=$('raceStatusBadge');
-  const labels={waiting:'MENUNGGU',countdown:'COUNTDOWN',playing:'BERLANGSUNG',finished:'SELESAI'};
-  const cols={waiting:'var(--muted)',countdown:'var(--gold)',playing:'#00FF88',finished:'var(--purple)'};
-  b.textContent=labels[status]||status?.toUpperCase()||'—';
-  b.style.color=cols[status]||'var(--muted)';b.style.borderColor=cols[status]||'var(--border2)';
-}
+function updateStatusBadge(status){const b=$('raceStatusBadge');const lbl={waiting:'MENUNGGU',countdown:'COUNTDOWN',playing:'BERLANGSUNG',finished:'SELESAI'};const col={waiting:'var(--muted)',countdown:'var(--gold)',playing:'#4FFFB0',finished:'var(--purple)'};b.textContent=lbl[status]||status?.toUpperCase()||'—';b.style.color=col[status]||'var(--muted)';b.style.borderColor=col[status]||'var(--border2)';}
 
-// ── READY ──────────────────────────────────────────────────────
-$('btnReady').addEventListener('click',()=>{
-  if(S.raceOn) return;
-  S.isReady=!S.isReady;
-  $('btnReady').textContent=S.isReady?'✓ SIAP (Batal)':'✓ SIAP';
-  $('btnReady').className=`btn ${S.isReady?'btn-red':'btn-c'}`;
-  if(S.isHost){if(S.players[S.peerId]) S.players[S.peerId].ready=S.isReady;bcastState();renderLobby();}
-  else if(S.hostConn){S.hostConn.send({type:'READY',ready:S.isReady});if(S.players[S.peerId]) S.players[S.peerId].ready=S.isReady;renderLobby();}
-});
+$('btnReady').addEventListener('click',()=>{if(S.raceOn)return;S.isReady=!S.isReady;$('btnReady').textContent=S.isReady?'✓ SIAP (Batal)':'✓ SIAP';$('btnReady').className=`btn ${S.isReady?'btn-red':'btn-c'}`;if(S.isHost){if(S.players[S.peerId])S.players[S.peerId].ready=S.isReady;bcastState();renderLobby();}else if(S.hostConn){S.hostConn.send({type:'READY',ready:S.isReady});if(S.players[S.peerId])S.players[S.peerId].ready=S.isReady;renderLobby();}});
 
-// ── START RACE ─────────────────────────────────────────────────
-$('btnStart').addEventListener('click',()=>{
-  if(!S.isHost) return;
-  S.text=randText(S.lang);S.raceStatus='countdown';bcastState();
-  bcastMsg({type:'COUNTDOWN',sec:3});
-  doCountdown(3,()=>{
-    S.raceStatus='playing';bcastMsg({type:'START',text:S.text});bcastState();actualStartRace();
-  });
-});
+$('btnStart').addEventListener('click',()=>{if(!S.isHost)return;S.text=buildWordStream(S.lang,100).join(' ');S.raceStatus='countdown';bcastState();bcastMsg({type:'COUNTDOWN',sec:3});doCountdown(3,()=>{S.raceStatus='playing';bcastMsg({type:'START',text:S.text});bcastState();actualStartRace(S.text);});});
 
-// ── COUNTDOWN ─────────────────────────────────────────────────
-function doCountdown(sec,cb){
-  const ov=$('cdOverlay'),num=$('cdNum'),lbl=$('cdLabel');
-  ov.classList.add('show');lbl.textContent='BERSIAP MENGETIK';
-  num.textContent=sec;num.style.color='var(--gold)';
-  let n=sec;
-  const iv=setInterval(()=>{
-    n--;
-    if(n<=0){
-      clearInterval(iv);num.textContent='GO!';num.style.color='#00FF88';lbl.textContent='MENGETIK SEKARANG!';
-      setTimeout(()=>{ov.classList.remove('show');num.style.color='var(--gold)';if(cb)cb();},700);
-    } else {
-      num.textContent=n;num.style.animation='none';
-      requestAnimationFrame(()=>requestAnimationFrame(()=>num.style.animation='pop .9s cubic-bezier(.175,.885,.32,1.275)'));
-    }
-  },1000);
-}
+function doCountdown(sec,cb){const ov=$('cdOverlay'),num=$('cdNum'),lbl=$('cdLabel');ov.classList.add('show');lbl.textContent='BERSIAP MENGETIK';num.textContent=sec;num.style.color='var(--gold)';let n=sec;const iv=setInterval(()=>{n--;if(n<=0){clearInterval(iv);num.textContent='GO!';num.style.color='#4FFFB0';lbl.textContent='MENGETIK SEKARANG!';setTimeout(()=>{ov.classList.remove('show');num.style.color='var(--gold)';if(cb)cb();},700);}else{num.textContent=n;num.style.animation='none';requestAnimationFrame(()=>requestAnimationFrame(()=>num.style.animation='cdPop .9s cubic-bezier(.175,.885,.32,1.275)'));}},1000);}
 
-// ── ACTUAL START ───────────────────────────────────────────────
-function actualStartRace(){
+function actualStartRace(text){
   S.raceOn=true;S.raceDone=false;S.startTime=Date.now();
-  initWords(S.text);$('cdOverlay').classList.remove('show');
+  S.raceWords=text.trim().split(/\s+/);S.rWi=0;S.rCi='';S.rWrong=new Set();S.rDone=0;
+  $('cdOverlay').classList.remove('show');
   $('btnReady').style.display='none';$('btnStart').style.display='none';
   const inp=$('tinput');inp.disabled=false;inp.value='';
-  if(!S.isSpec) inp.focus();
-  renderWords();$('typingSec').classList.add('active');$('pbar').style.width='0%';
-  S.timerIv=setInterval(updateStats,150);
-  updateStatusBadge('playing');
+  if(!S.isSpec)inp.focus();
+  renderRaceDisplay();$('typingSec').classList.add('active-gold');$('pbar').style.width='0%';
+  S.timerIv=setInterval(updateRaceStats,150);updateStatusBadge('playing');
   log(`🏁 <span class="gd">RACE DIMULAI!</span>`);
 }
 
-// ── INPUT HANDLER ──────────────────────────────────────────────
 $('tinput').addEventListener('keydown',e=>{
-  if(!S.raceOn||S.raceDone||S.isSpec) return;
+  if(!S.raceOn||S.raceDone||S.isSpec)return;
   if(e.key===' '){
-    e.preventDefault();
-    const typed=$('tinput').value.trim();
-    if(!typed) return;
-    const currentWord=S.words[S.currentWordIdx];
-    const isCorrect=typed===currentWord;
-    if(!isCorrect){S.wrongWords.add(S.currentWordIdx);$('typingSec').classList.add('err');setTimeout(()=>$('typingSec').classList.remove('err'),250);}
-    S.currentWordIdx++;S.completedWords=S.currentWordIdx;S.currentInput='';$('tinput').value='';
-    S.myProg=calcProgress();$('pbar').style.width=S.myProg+'%';
+    e.preventDefault();const typed=$('tinput').value.trim();if(!typed)return;
+    const cw=S.raceWords[S.rWi];const ok=typed===cw;
+    if(!ok){S.rWrong.add(S.rWi);$('typingSec').classList.add('err');setTimeout(()=>$('typingSec').classList.remove('err'),200);}
+    S.rWi++;S.rDone=S.rWi;S.rCi='';$('tinput').value='';
+    S.myProg=Math.round((S.rDone/S.raceWords.length)*100);$('pbar').style.width=S.myProg+'%';
     if(S.players[S.peerId]){S.players[S.peerId].prog=S.myProg;S.players[S.peerId].wpm=S.myWpm;}
-    renderTrack();
-    if(!S.isHost&&S.hostConn) S.hostConn.send({type:'PROGRESS',prog:S.myProg,wpm:S.myWpm});
-    if(S.isHost) bcastState();
-    if(S.currentWordIdx>=S.words.length){S.myProg=100;$('pbar').style.width='100%';if(S.players[S.peerId]) S.players[S.peerId].prog=100;renderTrack();setTimeout(()=>finishRace(),50);return;}
-    renderWords();updateStats();return;
+    renderTrack();if(!S.isHost&&S.hostConn)S.hostConn.send({type:'PROGRESS',prog:S.myProg,wpm:S.myWpm});
+    if(S.isHost)bcastState();
+    if(S.rWi>=S.raceWords.length){S.myProg=100;$('pbar').style.width='100%';if(S.players[S.peerId])S.players[S.peerId].prog=100;renderTrack();setTimeout(()=>finishRace(),50);return;}
+    renderRaceDisplay();updateRaceStats();return;
   }
-  if(e.key==='Backspace'){setTimeout(()=>{S.currentInput=$('tinput').value;renderWords();},0);return;}
+  if(e.key==='Backspace'){setTimeout(()=>{S.rCi=$('tinput').value;renderRaceDisplay();},0);}
 });
+$('tinput').addEventListener('input',()=>{if(!S.raceOn||S.raceDone||S.isSpec)return;let v=$('tinput').value.replace(/ /g,'');if($('tinput').value!==v)$('tinput').value=v;S.rCi=v;renderRaceDisplay();updateRaceStats();});
 
-$('tinput').addEventListener('input',e=>{
-  if(!S.raceOn||S.raceDone||S.isSpec) return;
-  let val=$('tinput').value.replace(/ /g,'');
-  if($('tinput').value!==val) $('tinput').value=val;
-  S.currentInput=val;renderWords();updateStats();
-});
+function updateRaceStats(){if(!S.startTime||!S.raceOn)return;const el=(Date.now()-S.startTime)/1000;$('sTim').textContent=Math.floor(el)+'s';S.myWpm=el>0?Math.round((S.rDone/el)*60):0;$('sWpm').textContent=S.myWpm;const cw=S.rDone-S.rWrong.size;S.myAcc=S.rDone>0?Math.round(cw/S.rDone*100):100;$('sAcc').textContent=S.myAcc+'%';const sorted=Object.values(S.players).sort((a,b)=>b.prog-a.prog);const rank=sorted.findIndex(p=>p.id===S.peerId)+1;$('sPos').textContent=['🥇','🥈','🥉'][rank-1]||'#'+rank;}
 
-// ── STATS ──────────────────────────────────────────────────────
-function updateStats(){
-  if(!S.startTime||!S.raceOn) return;
-  const el=(Date.now()-S.startTime)/1000;
-  $('sTim').textContent=Math.floor(el)+'s';
-  S.myWpm=el>0?Math.round((S.completedWords/el)*60):0;$('sWpm').textContent=S.myWpm;
-  const correctWords=S.completedWords-S.wrongWords.size;
-  S.myAcc=S.completedWords>0?Math.round(correctWords/S.completedWords*100):100;$('sAcc').textContent=S.myAcc+'%';
-  const sorted=Object.values(S.players).sort((a,b)=>b.prog-a.prog);
-  const rank=sorted.findIndex(p=>p.id===S.peerId)+1;$('sPos').textContent=['🥇','🥈','🥉'][rank-1]||'#'+rank;
-}
+function finishRace(){if(S.raceDone)return;S.raceDone=true;clearInterval(S.timerIv);$('tinput').disabled=true;$('typingSec').classList.remove('active-gold');const el=(Date.now()-S.startTime)/1000;const fw=Math.round(S.rDone/el*60);S.myWpm=fw;$('sWpm').textContent=fw;toast(`🏁 Selesai! ${fw} WPM`,'gd',4000);log(`🏆 <span class="gd">${S.name}</span> selesai! WPM: ${fw}`);if(S.isHost){if(S.players[S.peerId])Object.assign(S.players[S.peerId],{done:true,finishTime:Date.now(),wpm:fw,prog:100});bcastState();checkAllDone();}else if(S.hostConn)S.hostConn.send({type:'FINISHED',finishTime:Date.now(),wpm:fw});}
 
-// ── FINISH ────────────────────────────────────────────────────
-function finishRace(){
-  if(S.raceDone) return;S.raceDone=true;clearInterval(S.timerIv);
-  $('tinput').disabled=true;$('typingSec').classList.remove('active');
-  const el=(Date.now()-S.startTime)/1000;
-  const finalWpm=Math.round(S.words.length/el*60);
-  S.myWpm=finalWpm;$('sWpm').textContent=finalWpm;
-  toast(`🏁 Selesai! ${finalWpm} WPM`,'gd',4000);
-  log(`🏆 <span class="gd">${S.name}</span> selesai! WPM: ${finalWpm}`);
-  if(S.isHost){
-    if(S.players[S.peerId]) Object.assign(S.players[S.peerId],{done:true,finishTime:Date.now(),wpm:finalWpm,prog:100});
-    bcastState();checkAllDone();
-  } else if(S.hostConn){S.hostConn.send({type:'FINISHED',finishTime:Date.now(),wpm:finalWpm});}
-}
+function showResult(lb){$('resultModal').style.display='flex';const myRank=(lb||[]).findIndex(p=>p.id===S.peerId)+1||1;const medals=['🥇','🥈','🥉'];$('resultTitle').textContent=myRank===1?'🏆 ANDA MENANG!':`${medals[myRank-1]||'#'+myRank} HASIL LOMBA`;const elapsed=S.startTime?(Date.now()-S.startTime)/1000:0;$('resultStats').innerHTML=`<div class="rstat-modal"><div class="rstat-modal-v" style="color:var(--g2)">${S.myWpm}</div><div class="rstat-modal-l">WPM</div></div><div class="rstat-modal"><div class="rstat-modal-v">${S.myAcc}%</div><div class="rstat-modal-l">AKURASI</div></div><div class="rstat-modal"><div class="rstat-modal-v" style="color:var(--red)">${Math.round(elapsed)}s</div><div class="rstat-modal-l">WAKTU</div></div><div class="rstat-modal"><div class="rstat-modal-v" style="color:var(--purple)">${medals[myRank-1]||'#'+myRank}</div><div class="rstat-modal-l">PERINGKAT</div></div>`;const rlb=$('resultLb');rlb.innerHTML='';(lb||Object.values(S.players).sort((a,b)=>b.prog-a.prog)).forEach((p,i)=>{const el=document.createElement('div');el.className=`lbitem${i===0?' r1':i===1?' r2':i===2?' r3':''}`;el.innerHTML=`<div class="lbrank">${medals[i]||i+1}</div><div style="font-size:16px">${p.avatar||'🏎️'}</div><div class="lbname" style="color:${p.id===S.peerId?'var(--g2)':'var(--text)'}">${p.name}${p.id===S.peerId?' (Kamu)':''}</div><div><div class="lbwpm">${p.wpm||0}</div><div style="font-family:var(--fm);font-size:8px;color:var(--muted)">WPM</div></div>`;rlb.appendChild(el);});}
 
-// ── RESULT ────────────────────────────────────────────────────
-function showResult(lb){
-  $('resultModal').style.display='flex';
-  const myRank=(lb||[]).findIndex(p=>p.id===S.peerId)+1||1;
-  const medals=['🥇','🥈','🥉'];
-  $('resultTitle').textContent=myRank===1?'🏆 ANDA MENANG!':`${medals[myRank-1]||'#'+myRank} HASIL LOMBA`;
-  const elapsed=S.startTime?(Date.now()-S.startTime)/1000:0;
-  $('resultStats').innerHTML=`
-    <div class="rstat"><div class="rstat-v" style="color:var(--g)">${S.myWpm}</div><div class="rstat-l">WPM</div></div>
-    <div class="rstat"><div class="rstat-v">${S.myAcc}%</div><div class="rstat-l">AKURASI</div></div>
-    <div class="rstat"><div class="rstat-v" style="color:var(--red)">${Math.round(elapsed)}s</div><div class="rstat-l">WAKTU</div></div>
-    <div class="rstat"><div class="rstat-v" style="color:var(--purple)">${medals[myRank-1]||'#'+myRank}</div><div class="rstat-l">PERINGKAT</div></div>`;
-  const rlb=$('resultLb');rlb.innerHTML='';
-  (lb||Object.values(S.players).sort((a,b)=>b.prog-a.prog)).forEach((p,i)=>{
-    const el=document.createElement('div');el.className=`lbitem${i===0?' r1':i===1?' r2':i===2?' r3':''}`;
-    el.innerHTML=`<div class="lbrank">${medals[i]||i+1}</div>
-      <div style="font-size:18px">${p.avatar||'🏎️'}</div>
-      <div class="lbname" style="color:${p.id===S.peerId?'var(--g)':'var(--text)'}">${p.name}${p.id===S.peerId?' (Kamu)':''}</div>
-      <div><div class="lbwpm">${p.wpm||0}</div><div style="font-size:9px;color:var(--muted)">WPM</div></div>`;
-    rlb.appendChild(el);
-  });
-}
-
-$('btnPlayAgain').addEventListener('click',()=>{
-  $('resultModal').style.display='none';resetRaceUI();
-  if(S.isHost){
-    S.raceStatus='waiting';
-    Object.values(S.players).forEach(p=>{p.ready=p.id===S.peerId;p.prog=0;p.wpm=0;p.done=false;p.finishTime=null;});
-    bcastState();bcastMsg({type:'RESET'});
-    $('btnStart').style.display='block';renderLobby();renderTrack();
-  }
-});
+$('btnPlayAgain').addEventListener('click',()=>{$('resultModal').style.display='none';resetRaceUI();if(S.isHost){S.raceStatus='waiting';Object.values(S.players).forEach(p=>{p.ready=p.id===S.peerId;p.prog=0;p.wpm=0;p.done=false;p.finishTime=null;});bcastState();bcastMsg({type:'RESET'});$('btnStart').style.display='block';renderLobby();renderTrack();}});
 $('btnCloseResult').addEventListener('click',()=>{$('resultModal').style.display='none';leaveRoom();});
 
-function resetRaceUI(){
-  S.raceOn=false;S.raceDone=false;S.words=[];S.currentWordIdx=0;
-  S.currentInput='';S.wrongWords=new Set();S.completedWords=0;S.startTime=null;
-  clearInterval(S.timerIv);$('tinput').value='';$('tinput').disabled=true;
-  $('pbar').style.width='0%';$('sWpm').textContent='0';$('sAcc').textContent='100%';
-  $('sTim').textContent='0s';$('sPos').textContent='—';
-  $('tdisplay').innerHTML='<span style="color:var(--muted);font-family:var(--fd);font-size:12px;letter-spacing:4px">MENUNGGU RACE DIMULAI...</span>';
-  $('typingSec').classList.remove('active','err');
-  if(!S.isSpec){$('btnReady').style.display='block';$('btnReady').textContent='✓ SIAP';$('btnReady').className='btn btn-c';S.isReady=false;}
-  updateStatusBadge('waiting');
-}
+function resetRaceUI(){S.raceOn=false;S.raceDone=false;S.raceWords=[];S.rWi=0;S.rCi='';S.rWrong=new Set();S.rDone=0;S.startTime=null;clearInterval(S.timerIv);$('tinput').value='';$('tinput').disabled=true;$('pbar').style.width='0%';$('sWpm').textContent='0';$('sAcc').textContent='100%';$('sTim').textContent='0s';$('sPos').textContent='—';$('tdisplay').innerHTML='<div class="word-row" style="padding-top:4px"><span style="color:var(--muted);font-family:var(--fd);font-size:13px;letter-spacing:4px">MENUNGGU RACE DIMULAI...</span></div>';$('typingSec').classList.remove('active-gold','err');if(!S.isSpec){$('btnReady').style.display='block';$('btnReady').textContent='✓ SIAP';$('btnReady').className='btn btn-c';S.isReady=false;}updateStatusBadge('waiting');}
 
 $('btnLeave').addEventListener('click',()=>leaveRoom());
-function leaveRoom(forced=false){
-  clearInterval(S.timerIv);
-  if(S.hostConn){try{S.hostConn.close()}catch(e){}S.hostConn=null;}
-  Object.values(S.conns).forEach(c=>{try{c.close()}catch(e){}});
-  S.conns={};S.isHost=false;S.isSpec=false;S.isReady=false;S.raceOn=false;S.raceDone=false;
-  S.players={};S.specs={};S.colorMap={};S.raceStatus='waiting';
-  $('raceArea').style.display='none';$('homeSection').style.display='grid';
-  $('specBar').classList.remove('show');$('cdOverlay').classList.remove('show');$('resultModal').style.display='none';
-  $('btnReady').style.display='none';$('btnStart').style.display='none';$('trackList').innerHTML='';
-  if(!forced) toast('Keluar dari room','gd');
-  log(`👋 <span class="hl">${S.name}</span> keluar dari room`);
-}
+function leaveRoom(forced=false){clearInterval(S.timerIv);if(S.hostConn){try{S.hostConn.close()}catch(e){}S.hostConn=null;}Object.values(S.conns).forEach(c=>{try{c.close()}catch(e){}});S.conns={};S.isHost=false;S.isSpec=false;S.isReady=false;S.raceOn=false;S.raceDone=false;S.players={};S.specs={};S.colorMap={};S.raceStatus='waiting';$('raceArea').style.display='none';$('homeSection').style.display='block';$('specBar').classList.remove('show');$('cdOverlay').classList.remove('show');$('resultModal').style.display='none';$('btnReady').style.display='none';$('btnStart').style.display='none';$('trackList').innerHTML='';if(!forced)toast('Keluar dari room','gd');log(`👋 <span class="hl">${S.name}</span> keluar dari room`);}
 
-function checkUrlRoom(){
-  const p=new URLSearchParams(window.location.search);const r=p.get('room');
-  if(r&&S.name){$('inpJoinCode').value=r;setTimeout(()=>$('btnJoin').click(),500);}
-}
+function checkUrlRoom(){const p=new URLSearchParams(window.location.search);const r=p.get('room');if(r&&S.name){$('inpJoinCode').value=r;setTimeout(()=>$('btnJoin').click(),500);}}
 
 // ── INIT ──────────────────────────────────────────────────────
 load();
-if(S.name){
-  $('inpName').value=S.name;$('hdrName').textContent=`${S.avatar} ${S.name}`;
-  $('langSel').value=S.lang;
-  document.querySelectorAll('.avopt').forEach(el=>{if(el.dataset.e===S.avatar)el.click();});
-  $('setupModal').style.display='none';
-  log(`👋 <span class="hl">${S.name}</span> kembali ke arena`);
-}
+if(S.name){$('inpName').value=S.name;$('hdrName').textContent=`${S.avatar} ${S.name}`;$('langSel').value=S.lang;document.querySelectorAll('.car-opt').forEach(el=>{if(el.dataset.e===S.avatar)el.click();});$('setupModal').style.display='none';$('bestWpmDisplay').textContent=S.bestWpm||'—';$('attemptDisplay').textContent=S.attempts;log(`👋 <span class="hl">${S.name}</span> kembali ke arena`);}
 initPeer();
-setInterval(()=>{if(S.raceOn||$('raceArea').style.display!=='none') renderTrack();},400);
+setInterval(()=>{if(S.raceOn||$('raceArea').style.display!=='none')renderTrack();},400);
 </script>
 </body>
 </html>
